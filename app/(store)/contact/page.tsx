@@ -33,15 +33,25 @@ export default function ContactPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
+      {/* Demo Notice Banner */}
+      <div className="p-4 mb-8 rounded-xl bg-[#FAF9F6] border border-[#E4E7EB] text-xs text-[#6B7280] flex items-center gap-3">
+        <span className="font-semibold text-[#1F4E43] uppercase tracking-wider text-[11px] shrink-0 bg-[#1F4E43]/10 px-2 py-0.5 rounded">
+          Demo Notice
+        </span>
+        <span>
+          Aura Living is an e-commerce portfolio demonstration. The contact information, telephone numbers, and addresses below are sample placeholders for design demonstration.
+        </span>
+      </div>
+
       <div className="text-center max-w-2xl mx-auto space-y-3 mb-14">
         <p className="text-xs font-semibold uppercase tracking-widest text-[#1F4E43]">
-          Customer Care
+          Customer Care (Demo)
         </p>
         <h1 className="font-serif text-3xl sm:text-4xl font-bold text-[#14171A]">
           Concierge &amp; Inquiries
         </h1>
         <p className="text-sm text-[#6B7280]">
-          Whether you need bespoke dimension advice, material swatches, or order guidance, our San Francisco studio team is here.
+          Experience our customer care interface: test inquiry form validation and inspect response workflows.
         </p>
       </div>
 
@@ -52,26 +62,26 @@ export default function ContactPage() {
             <div className="w-8 h-8 rounded-lg bg-[#1F4E43]/10 flex items-center justify-center text-[#1F4E43]">
               <Mail className="w-4 h-4" />
             </div>
-            <h3 className="font-semibold text-sm text-[#14171A]">Direct Email</h3>
+            <h3 className="font-semibold text-sm text-[#14171A]">Direct Email (Demo)</h3>
             <p className="text-xs text-[#6B7280]">concierge@demo.aura</p>
-            <p className="text-[11px] text-[#9CA3AF]">Response window within 1 business day</p>
+            <p className="text-[11px] text-[#9CA3AF]">Simulated response within 1 business day</p>
           </div>
 
           <div className="p-6 bg-white rounded-xl border border-[#E4E7EB] space-y-2">
             <div className="w-8 h-8 rounded-lg bg-[#1F4E43]/10 flex items-center justify-center text-[#1F4E43]">
               <Phone className="w-4 h-4" />
             </div>
-            <h3 className="font-semibold text-sm text-[#14171A]">Studio Telephone</h3>
-            <p className="text-xs text-[#6B7280]">+1 (415) 555-0192</p>
-            <p className="text-[11px] text-[#9CA3AF]">Monday – Friday, 9am – 5pm PT</p>
+            <h3 className="font-semibold text-sm text-[#14171A]">Telephone Placeholder</h3>
+            <p className="text-xs text-[#6B7280]">+1 (415) 555-0192 (Demo Sandbox)</p>
+            <p className="text-[11px] text-[#9CA3AF]">Sample support hours</p>
           </div>
 
           <div className="p-6 bg-white rounded-xl border border-[#E4E7EB] space-y-2">
             <div className="w-8 h-8 rounded-lg bg-[#1F4E43]/10 flex items-center justify-center text-[#1F4E43]">
               <MapPin className="w-4 h-4" />
             </div>
-            <h3 className="font-semibold text-sm text-[#14171A]">San Francisco Design Showroom</h3>
-            <p className="text-xs text-[#6B7280]">742 Montgomery St, San Francisco, CA 94111</p>
+            <h3 className="font-semibold text-sm text-[#14171A]">Sample Design Showroom (Concept)</h3>
+            <p className="text-xs text-[#6B7280]">742 Montgomery St, San Francisco, CA (Demo Location)</p>
           </div>
         </div>
 
@@ -83,10 +93,10 @@ export default function ContactPage() {
                 <CheckCircle2 className="w-6 h-6" />
               </div>
               <h3 className="font-serif text-xl font-bold text-[#14171A]">
-                Inquiry Received
+                Inquiry Received (Demo Simulation)
               </h3>
               <p className="text-xs text-[#6B7280] max-w-sm mx-auto">
-                Thank you for connecting with us. Our design concierge team will respond promptly.
+                Thank you for testing the concierge inquiry form. In this demonstration environment, form submissions are validated client-side without external transmission.
               </p>
               <Button
                 variant="outline"

@@ -73,6 +73,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
       quantity: 1,
       imageUrl: primaryImg,
       maxStock: selectedVariant.stockQuantity,
+      slug: product.slug,
     });
 
     trackEvent("add_to_cart", {

@@ -7,6 +7,7 @@ import { Trash2, Plus, Minus } from "lucide-react";
 import { CartItem } from "@/types";
 import { formatPrice } from "@/lib/utils";
 import { useCartStore } from "@/store/cart-store";
+import { getProductSlugById } from "@/lib/api/products";
 
 interface CartLineItemProps {
   item: CartItem;
@@ -15,6 +16,7 @@ interface CartLineItemProps {
 
 export function CartLineItem({ item, onItemClick }: CartLineItemProps) {
   const { updateQuantity, removeItem } = useCartStore();
+  const productSlug = item.slug || getProductSlugById(item.productId);
 
   return (
     <div className="flex gap-4 py-4 border-b border-[#E4E7EB] last:border-0 items-start">
@@ -32,7 +34,7 @@ export function CartLineItem({ item, onItemClick }: CartLineItemProps) {
       {/* Info */}
       <div className="flex-1 min-w-0">
         <h3 className="text-sm font-medium text-[#14171A] truncate hover:text-[#1F4E43]">
-          <Link href={`/p/${item.productId.replace("prod-", "")}`} onClick={onItemClick}>
+          <Link href={`/p/${productSlug}`} onClick={onItemClick}>
             {item.title}
           </Link>
         </h3>

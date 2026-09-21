@@ -9,6 +9,7 @@ import { useCartStore } from "@/store/cart-store";
 import { FreeShippingMeter } from "@/components/cart/free-shipping-meter";
 import { formatPrice } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { getProductSlugById } from "@/lib/api/products";
 
 export default function CartPage() {
   const router = useRouter();
@@ -112,7 +113,7 @@ export default function CartPage() {
                     </div>
                     <div className="min-w-0">
                       <h3 className="text-sm font-semibold text-[#14171A] truncate hover:text-[#1F4E43]">
-                        <Link href={`/p/${item.productId.replace("prod-", "")}`}>
+                        <Link href={`/p/${item.slug || getProductSlugById(item.productId)}`}>
                           {item.title}
                         </Link>
                       </h3>

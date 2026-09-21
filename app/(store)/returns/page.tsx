@@ -11,15 +11,25 @@ export const metadata = {
 export default function ReturnsPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 space-y-12">
+      {/* Demo Notice Banner */}
+      <div className="p-4 rounded-xl bg-[#FAF9F6] border border-[#E4E7EB] text-xs text-[#6B7280] flex items-center gap-3">
+        <span className="font-semibold text-[#1F4E43] uppercase tracking-wider text-[11px] shrink-0 bg-[#1F4E43]/10 px-2 py-0.5 rounded">
+          Demo Environment
+        </span>
+        <span>
+          Aura Living is a demonstration storefront. The return policies, trial periods, and craftsmanship standards below represent simulated customer care terms for client validation.
+        </span>
+      </div>
+
       <div className="text-center max-w-2xl mx-auto space-y-3">
         <p className="text-xs font-semibold uppercase tracking-widest text-[#1F4E43]">
-          Assurance &amp; Warranty
+          Assurance &amp; Standards (Sample Policy)
         </p>
         <h1 className="font-serif text-3xl sm:text-4xl font-bold text-[#14171A]">
           Returns &amp; 30-Day Home Trial
         </h1>
         <p className="text-sm text-[#6B7280]">
-          We want you to live with our furniture and textiles in your natural light before feeling fully committed.
+          Simulated return guidelines designed to demonstrate effortless exchanges and customer confidence.
         </p>
       </div>
 
@@ -29,10 +39,10 @@ export default function ReturnsPage() {
             <RotateCcw className="w-5 h-5" />
           </div>
           <h3 className="font-serif text-base font-bold text-[#14171A]">
-            30-Day Trial Window
+            30-Day Trial Window (Demo)
           </h3>
           <p className="text-xs text-[#6B7280] leading-relaxed">
-            Unpack and enjoy your items for 30 days. If the dimensions or feel are not right for your sanctuary, request a return.
+            Simulated 30-day evaluation window. Test pieces in your living space with demonstration return support.
           </p>
         </div>
 
@@ -41,10 +51,10 @@ export default function ReturnsPage() {
             <ShieldCheck className="w-5 h-5" />
           </div>
           <h3 className="font-serif text-base font-bold text-[#14171A]">
-            2-Year Craftsmanship Warranty
+            Craftsmanship Standard (Sample)
           </h3>
           <p className="text-xs text-[#6B7280] leading-relaxed">
-            All timber joints, structural frames, and electrical luminaire assemblies are warranted against manufacturing defects for 2 full years.
+            Sample architectural specifications: timber joinery, frames, and electrical luminaires modeled on 2-year endurance benchmarks.
           </p>
         </div>
 

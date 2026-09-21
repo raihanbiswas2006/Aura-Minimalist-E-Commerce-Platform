@@ -40,16 +40,16 @@ export function HeroSection() {
             {/* Micro value badges */}
             <div className="pt-6 border-t border-[#E4E7EB] grid grid-cols-3 gap-4 text-center lg:text-left">
               <div>
-                <p className="text-lg font-serif font-bold text-[#14171A]">100%</p>
-                <p className="text-[11px] text-[#6B7280]">FSC Oak & European Flax</p>
+                <p className="text-lg font-serif font-bold text-[#14171A]">Natural</p>
+                <p className="text-[11px] text-[#6B7280]">Oak &amp; Flax (Sample Spec)</p>
               </div>
               <div>
                 <p className="text-lg font-serif font-bold text-[#14171A]">$150+</p>
-                <p className="text-[11px] text-[#6B7280]">Complimentary Delivery</p>
+                <p className="text-[11px] text-[#6B7280]">Free Delivery (Demo Tier)</p>
               </div>
               <div>
                 <p className="text-lg font-serif font-bold text-[#14171A]">30-Day</p>
-                <p className="text-[11px] text-[#6B7280]">Home Trial Guarantee</p>
+                <p className="text-[11px] text-[#6B7280]">Trial Policy (Sample)</p>
               </div>
             </div>
           </div>

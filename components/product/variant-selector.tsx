@@ -60,6 +60,7 @@ export function VariantSelector({ product }: VariantSelectorProps) {
       quantity,
       imageUrl: product.images[0]?.url || "",
       maxStock: selectedVariant.stockQuantity,
+      slug: product.slug,
     });
 
     trackEvent("add_to_cart", {
@@ -86,6 +87,7 @@ export function VariantSelector({ product }: VariantSelectorProps) {
       quantity,
       imageUrl: product.images[0]?.url || "",
       maxStock: selectedVariant.stockQuantity,
+      slug: product.slug,
     });
 
     router.push("/checkout");
@@ -95,14 +97,19 @@ export function VariantSelector({ product }: VariantSelectorProps) {
     <div className="space-y-6">
       {/* Pricing Module */}
       <div className="space-y-1">
-        <div className="flex items-baseline gap-3">
+        <div className="flex items-baseline gap-3 flex-wrap">
           <span className="text-3xl font-semibold text-[#14171A]">
             {formatPrice(activePrice)}
           </span>
           {product.discountPrice && (
-            <span className="text-lg text-[#9CA3AF] line-through">
-              {formatPrice(basePriceWithVariant)}
-            </span>
+            <>
+              <span className="text-lg text-[#9CA3AF] line-through">
+                {formatPrice(basePriceWithVariant)}
+              </span>
+              <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-[#C2222E]/10 text-[#C2222E]">
+                -{Math.round(((basePriceWithVariant - activePrice) / basePriceWithVariant) * 100)}% Sale
+              </span>
+            </>
           )}
         </div>
         <p className="text-xs text-[#6B7280]">
@@ -290,19 +297,19 @@ export function VariantSelector({ product }: VariantSelectorProps) {
         )}
       </div>
 
-      {/* Trust & Craftsmanship Guarantees */}
+      {/* Trust & Craftsmanship Standards (Sample Policy Simulation) */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-6 border-t border-[#E4E7EB] text-xs text-[#6B7280]">
         <div className="flex items-center gap-2">
           <Truck className="w-4 h-4 text-[#1F4E43] shrink-0" />
-          <span>Carbon-neutral domestic shipping</span>
+          <span>Carbon-neutral delivery (Demo)</span>
         </div>
         <div className="flex items-center gap-2">
           <RotateCcw className="w-4 h-4 text-[#1F4E43] shrink-0" />
-          <span>30-day effortless return window</span>
+          <span>30-day return window (Sample)</span>
         </div>
         <div className="flex items-center gap-2">
           <Shield className="w-4 h-4 text-[#1F4E43] shrink-0" />
-          <span>2-year master joinery warranty</span>
+          <span>Joinery craft standard (Sample)</span>
         </div>
       </div>
 

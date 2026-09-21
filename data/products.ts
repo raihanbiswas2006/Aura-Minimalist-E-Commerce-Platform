@@ -7,7 +7,7 @@ export const PRODUCTS: Product[] = [
     title: "Nordic Lounge Chair",
     subtitle: "Solid white oak accent chair with bouclé upholstery",
     description:
-      "Crafted with meticulous Japanese joinery and timeless Scandinavian silhouettes, the Nordic Lounge Chair blends architectural purity with enveloping softness. The solid FSC-certified white oak frame cradles a deep seat upholstered in high-density bouclé yarn.",
+      "Crafted with meticulous Japanese joinery and timeless Scandinavian silhouettes, the Nordic Lounge Chair blends architectural purity with enveloping softness. The solid sustainably-harvested white oak frame cradles a deep seat upholstered in high-density bouclé yarn.",
     categoryId: "cat-furniture",
     basePrice: 380.0,
     discountPrice: 349.0,
@@ -70,7 +70,7 @@ export const PRODUCTS: Product[] = [
       Materials: "Solid White Oak frame, textured wool/cotton bouclé",
       Weight: "34 lbs",
       Care: "Spot clean with mild water-free solvent or dry cleaning",
-      Origin: "Crafted in Kyoto, Japan",
+      Origin: "Design Concept: Kyoto, Japan (Sample)",
     },
     createdAt: "2026-06-15",
   },
@@ -200,7 +200,7 @@ export const PRODUCTS: Product[] = [
     ],
     specifications: {
       Dimensions: "20\" x 20\" Square or 14\" x 24\" Lumbar",
-      Material: "100% Certified European Flax Linen (190 gsm)",
+      Material: "100% European Flax Linen (190 gsm) (Sample Spec)",
       Insert: "Recycled micro-cluster polyfill mimicking 700-fill down",
       Closure: "Hidden bottom zipper with flange flap",
     },
@@ -268,7 +268,7 @@ export const PRODUCTS: Product[] = [
     title: "Travertine Coffee Table",
     subtitle: "Solid Italian Roman travertine with softened bullnose edge",
     description:
-      "A masterwork of natural stone minimalism. Sourced directly from Tivoli, Italy, each slab exhibits distinct honey veining and unpolished cavities filled with smooth resin, resting on monolithic plinths.",
+      "A masterwork of natural stone minimalism. Inspired by classic architectural travertine, each slab exhibits distinct honey veining and unpolished cavities filled with smooth resin, resting on monolithic plinths.",
     categoryId: "cat-furniture",
     basePrice: 560.0,
     discountPrice: 480.0,
@@ -559,7 +559,7 @@ export const PRODUCTS: Product[] = [
     ],
     specifications: {
       Includes: "1 Duvet Cover, 2 Envelope Closure Pillowcases",
-      Material: "100% Certified European Flax Linen (175 gsm)",
+      Material: "100% European Flax Linen (175 gsm) (Sample Spec)",
       Ties: "8 interior corner and side ribbon ties",
     },
     createdAt: "2026-07-05",
@@ -824,7 +824,7 @@ export const PRODUCTS: Product[] = [
     specifications: {
       Includes: "Two oversized bath towels (30\" x 58\")",
       Weight: "700 GSM high density weave",
-      Certification: "GOTS & OEKO-TEX certified organic",
+      Certification: "GOTS & OEKO-TEX benchmark specification (Sample)",
     },
     createdAt: "2026-07-28",
   },

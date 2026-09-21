@@ -5,23 +5,23 @@ export function ValueProps() {
   const items = [
     {
       icon: Truck,
-      title: "Carbon-Neutral Delivery",
-      description: "100% offset transportation on all domestic orders over $150.",
+      title: "Carbon-Neutral Policy (Demo)",
+      description: "Simulated 100% offset ground transit on domestic orders over $150.",
     },
     {
       icon: RotateCcw,
-      title: "30-Day In-Home Trial",
-      description: "Live with your piece. Hassle-free exchanges or complete refunds.",
+      title: "30-Day In-Home Trial (Sample)",
+      description: "Simulated return terms: hassle-free exchanges or demo refunds.",
     },
     {
       icon: ShieldCheck,
-      title: "Enduring Joinery Warranty",
-      description: "Crafted from kiln-dried solid woods backed by a 2-year guarantee.",
+      title: "Enduring Joinery Standards",
+      description: "Sample design specifications modeled on kiln-dried solid hardwoods.",
     },
     {
       icon: Headphones,
-      title: "Dedicated Design Concierge",
-      description: "Direct interior guidance and material swatch kits on request.",
+      title: "Design Concierge (Demo)",
+      description: "Simulated interior styling assistance and material guidance.",
     },
   ];
 

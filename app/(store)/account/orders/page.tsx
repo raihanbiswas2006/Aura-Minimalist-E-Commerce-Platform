@@ -8,6 +8,7 @@ import { useOrderStore } from "@/store/order-store";
 import { useAuthStore } from "@/store/auth-store";
 import { formatPrice, formatDate } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { getProductSlugById } from "@/lib/api/products";
 
 export default function AccountOrdersPage() {
   const { orders } = useOrderStore();
@@ -149,7 +150,7 @@ export default function AccountOrdersPage() {
                       <div>
                         <h3 className="text-sm font-semibold text-[#14171A]">
                           <Link
-                            href={`/p/${item.productId.replace("prod-", "")}`}
+                            href={`/p/${item.slug || getProductSlugById(item.productId)}`}
                             className="hover:text-[#1F4E43]"
                           >
                             {item.title}

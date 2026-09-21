@@ -13,6 +13,7 @@ export interface ProductFilterParams {
   sort?: "featured" | "price-asc" | "price-desc" | "rating-desc" | "date-desc";
   tag?: string;
   limit?: number;
+  query?: string;
 }
 
 // In-memory runtime cache for product stock mutations (used by Admin and PDP)
@@ -71,6 +72,11 @@ export function getProductById(id: string): Product | undefined {
   return runtimeProducts.find((p) => p.id === id);
 }
 
+export function getProductSlugById(id: string): string {
+  const prod = runtimeProducts.find((p) => p.id === id);
+  return prod?.slug || id.replace("prod-", "");
+}
+
 export function getReviewsForProduct(productId: string): Review[] {
   return runtimeReviews.filter((r) => r.productId === productId);
 }
@@ -85,6 +91,13 @@ export function getProducts(params?: ProductFilterParams): Product[] {
   let list = [...runtimeProducts];
 
   if (!params) return list;
+
+  // Search query filter
+  if (params.query && params.query.trim().length > 0) {
+    const searchRes = searchCatalog(params.query);
+    const searchProductIds = new Set(searchRes.products.map((p) => p.id));
+    list = list.filter((p) => searchProductIds.has(p.id));
+  }
 
   // Category filter
   if (params.category && params.category !== "all") {
@@ -155,7 +168,13 @@ export function getProducts(params?: ProductFilterParams): Product[] {
       break;
     case "featured":
     default:
-      list.sort((a, b) => (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0));
+      if (params.query && params.query.trim().length > 0) {
+        const searchRes = searchCatalog(params.query);
+        const idOrder = new Map(searchRes.products.map((p, idx) => [p.id, idx]));
+        list.sort((a, b) => (idOrder.get(a.id) ?? 999) - (idOrder.get(b.id) ?? 999));
+      } else {
+        list.sort((a, b) => (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0));
+      }
       break;
   }
 

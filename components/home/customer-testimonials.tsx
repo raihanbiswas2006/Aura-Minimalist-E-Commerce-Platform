@@ -31,13 +31,13 @@ export function CustomerTestimonials() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-14">
           <p className="text-xs uppercase font-semibold tracking-wider text-[#1F4E43] mb-1">
-            Community Voices
+            Community Voices (Demo Personas)
           </p>
           <h2 className="font-serif text-3xl sm:text-4xl font-semibold text-[#14171A]">
-            Endorsed by Architects & Stylists
+            Design Community Impressions
           </h2>
           <p className="text-xs sm:text-sm text-[#6B7280] mt-2">
-            Discerning individuals living with Aura pieces across their daily routines.
+            Sample feedback representing design personas living with Aura concept pieces.
           </p>
         </div>
 
@@ -67,7 +67,7 @@ export function CustomerTestimonials() {
                 </div>
                 <span className="inline-flex items-center gap-1 text-[10px] font-medium text-[#18804E] bg-[#18804E]/10 px-2 py-0.5 rounded-full">
                   <CheckCircle2 className="w-3 h-3" />
-                  Verified Buyer
+                  Verified Buyer (Demo)
                 </span>
               </div>
             </div>

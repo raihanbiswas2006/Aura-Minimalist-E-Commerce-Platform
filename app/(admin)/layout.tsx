@@ -18,9 +18,9 @@ export default function AdminLayout({
             Aura
           </Link>
           <span className="text-white/30">|</span>
-          <div className="flex items-center gap-1.5 text-xs text-[#34D399] bg-[#34D399]/10 px-2.5 py-1 rounded-full font-medium">
+          <div className="flex items-center gap-1.5 text-xs text-[#F59E0B] bg-[#F59E0B]/10 px-2.5 py-1 rounded-full font-medium">
             <ShieldCheck className="w-3.5 h-3.5" />
-            <span>Demonstration Administration Center</span>
+            <span>Interactive Simulation Sandbox (Demo)</span>
           </div>
         </div>
 

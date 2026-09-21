@@ -260,7 +260,7 @@ export default async function ProductDetailsPage({ params }: ProductPageProps) {
                     • <strong>Express Courier:</strong> 1-2 business days ($25.00).
                   </p>
                   <p>
-                    • All domestic shipments are 100% carbon-offset and packaged in biodegradable honeycomb paper.
+                    • <strong>Simulated Logistics:</strong> Sample ground delivery policy demonstrating threshold calculations ($150 complimentary tier).
                   </p>
                 </div>
               </AccordionItem>

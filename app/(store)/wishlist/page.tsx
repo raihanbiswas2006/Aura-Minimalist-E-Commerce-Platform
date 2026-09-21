@@ -37,6 +37,7 @@ export default function WishlistPage() {
       quantity: 1,
       imageUrl: product.images[0]?.url || "",
       maxStock: defaultVariant?.stockQuantity || 5,
+      slug: product.slug,
     });
 
     removeFromWishlist(product.id);
@@ -121,9 +122,16 @@ export default function WishlistPage() {
                     <h3 className="text-sm font-semibold text-[#14171A] truncate mt-0.5 hover:text-[#1F4E43]">
                       <Link href={`/p/${product.slug}`}>{product.title}</Link>
                     </h3>
-                    <p className="text-sm font-bold text-[#14171A] mt-1.5">
-                      {formatPrice(activePrice)}
-                    </p>
+                    <div className="flex items-baseline gap-2 mt-1.5">
+                      <span className="text-sm font-bold text-[#14171A]">
+                        {formatPrice(activePrice)}
+                      </span>
+                      {product.discountPrice && (
+                        <span className="text-xs text-[#9CA3AF] line-through">
+                          {formatPrice(product.basePrice)}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
 

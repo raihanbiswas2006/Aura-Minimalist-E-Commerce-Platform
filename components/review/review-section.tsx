@@ -61,7 +61,7 @@ export function ReviewSection({
             Customer Impressions & Reviews
           </h2>
           <p className="text-xs text-[#6B7280] mt-1">
-            Real feedback from verified purchasers in our design community.
+            Sample impressions and community feedback for this demonstration piece.
           </p>
         </div>
 
@@ -144,7 +144,7 @@ export function ReviewSection({
                     {rev.isVerifiedPurchase && (
                       <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#18804E] bg-[#18804E]/10 px-2 py-0.5 rounded-full">
                         <CheckCircle2 className="w-3 h-3" />
-                        Verified Buyer
+                        Verified Buyer (Demo)
                       </span>
                     )}
                   </div>

@@ -165,7 +165,7 @@ export function ReviewSubmissionModal({
             Cancel
           </Button>
           <Button type="submit" variant="primary">
-            Submit Verified Review
+            Submit Demo Review
           </Button>
         </div>
       </form>

@@ -14,12 +14,18 @@ interface CatalogViewProps {
   initialCategory?: string;
   pageTitle?: string;
   pageDescription?: string;
+  searchQuery?: string;
+  matchingCategories?: { id: string; slug: string; title: string }[];
+  onClearSearch?: () => void;
 }
 
 export function CatalogView({
   initialCategory = "all",
   pageTitle,
   pageDescription,
+  searchQuery,
+  matchingCategories,
+  onClearSearch,
 }: CatalogViewProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -102,8 +108,9 @@ export function CatalogView({
       rating: filters.rating,
       inStockOnly: filters.inStockOnly,
       sort: filters.sort as any,
+      query: searchQuery,
     });
-  }, [filters]);
+  }, [filters, searchQuery]);
 
   // Derived Title & Category metadata
   const currentCategoryObj = CATEGORIES.find(
@@ -147,15 +154,45 @@ export function CatalogView({
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      {/* Category Editorial Header */}
-      <div className="mb-10 max-w-2xl">
-        <h1 className="font-serif text-3xl sm:text-4xl font-semibold text-[#14171A]">
-          {title}
-        </h1>
-        <p className="text-xs sm:text-sm text-[#6B7280] mt-2 leading-relaxed">
-          {description}
-        </p>
+      {/* Category / Search Editorial Header */}
+      <div className="mb-8 pb-6 border-b border-[#E4E7EB] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="max-w-2xl">
+          <h1 className="font-serif text-3xl sm:text-4xl font-semibold text-[#14171A]">
+            {title}
+          </h1>
+          <p className="text-xs sm:text-sm text-[#6B7280] mt-2 leading-relaxed">
+            {description}
+          </p>
+        </div>
+        {onClearSearch && (
+          <button
+            type="button"
+            onClick={onClearSearch}
+            className="self-start sm:self-auto flex items-center gap-1.5 px-3 py-1.5 text-xs text-[#6B7280] hover:text-[#C2222E] bg-white border border-[#E4E7EB] rounded-md transition-colors cursor-pointer"
+          >
+            <X className="w-3.5 h-3.5" />
+            <span>Clear Search</span>
+          </button>
+        )}
       </div>
+
+      {/* Matching Categories Pill Bar */}
+      {matchingCategories && matchingCategories.length > 0 && (
+        <div className="mb-8 p-4 bg-[#FAF9F6] border border-[#E4E7EB] rounded-xl flex items-center gap-3">
+          <span className="text-xs font-semibold text-[#14171A]">Related Disciplines:</span>
+          <div className="flex flex-wrap gap-2">
+            {matchingCategories.map((cat) => (
+              <a
+                key={cat.id}
+                href={`/c/${cat.slug}`}
+                className="text-xs bg-white border border-[#E4E7EB] hover:border-[#1F4E43] text-[#1F4E43] px-3 py-1 rounded-full font-medium transition-colors"
+              >
+                {cat.title}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Main Content Layout */}
       <div className="flex gap-10 items-start">

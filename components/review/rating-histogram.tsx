@@ -49,7 +49,7 @@ export function RatingHistogram({
           ))}
         </div>
         <p className="text-xs text-[#6B7280]">
-          Based on {totalReviews} verified {totalReviews === 1 ? "review" : "reviews"}
+          Based on {totalReviews} sample {totalReviews === 1 ? "review" : "reviews"} (Demo)
         </p>
       </div>
 

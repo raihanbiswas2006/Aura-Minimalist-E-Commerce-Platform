@@ -473,7 +473,7 @@ export default function CheckoutPage() {
                           Standard Domestic Delivery (3–5 Business Days)
                         </p>
                         <p className="text-xs text-[#6B7280] mt-0.5">
-                          100% Carbon-Neutral transportation via ground courier
+                          Simulated ground courier delivery with tracking updates
                         </p>
                       </div>
                     </div>

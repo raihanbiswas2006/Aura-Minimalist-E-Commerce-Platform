@@ -58,6 +58,7 @@ export interface CartItem {
   quantity: number;
   imageUrl: string;
   maxStock: number;
+  slug?: string;
 }
 
 export interface CartState {

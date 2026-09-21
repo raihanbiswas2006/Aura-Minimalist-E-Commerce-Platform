@@ -33,6 +33,19 @@ export default function AdminPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      {/* Simulation Sandbox Notice Banner */}
+      <div className="mb-8 p-4 rounded-xl bg-amber-50 border border-amber-200 flex items-start gap-3 text-xs text-amber-900">
+        <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+        <div>
+          <p className="font-bold uppercase tracking-wider text-[11px] text-amber-800">
+            Portfolio Demonstration Sandbox (Unsecured Interface)
+          </p>
+          <p className="mt-0.5 text-amber-800/90 leading-relaxed">
+            This administrative control center operates client-side for evaluating real-time stock mutations, variant states (In Stock / Low Stock / Out of Stock), and order lifecycle transitions. It is intentionally unauthenticated for portfolio review and client validation, and does not imply a production-secured administration system.
+          </p>
+        </div>
+      </div>
+
       {/* Header & Tabs */}
       <div className="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-[#E4E7EB] mb-8 gap-4">
         <div>
@@ -107,7 +120,17 @@ export default function AdminPage() {
                       {p.title}
                     </h3>
                     <p className="text-xs text-[#6B7280]">
-                      Slug: <code className="text-[#1F4E43]">/p/{p.slug}</code> • Base Price: {formatPrice(p.basePrice)}
+                      Slug: <code className="text-[#1F4E43]">/p/{p.slug}</code> •{" "}
+                      {p.discountPrice ? (
+                        <span>
+                          Compare-at / Original: <span className="line-through">{formatPrice(p.basePrice)}</span> •{" "}
+                          <strong className="text-[#C2222E]">Sale Price: {formatPrice(p.discountPrice)}</strong>
+                        </span>
+                      ) : (
+                        <span>
+                          Regular Price: <strong>{formatPrice(p.basePrice)}</strong>
+                        </span>
+                      )}
                     </p>
                   </div>
                   <Link
@@ -124,6 +147,7 @@ export default function AdminPage() {
                   {p.variants.map((v) => {
                     const isZero = v.stockQuantity === 0;
                     const isLow = !isZero && v.stockQuantity < 5;
+                    const effectivePrice = (p.discountPrice ?? p.basePrice) + (v.priceModifier || 0);
 
                     return (
                       <div
@@ -145,6 +169,17 @@ export default function AdminPage() {
                           >
                             {isZero ? "Out of Stock" : `${v.stockQuantity} in stock`}
                           </span>
+                        </div>
+
+                        <div className="text-[11px] text-[#6B7280] flex items-center justify-between">
+                          <span>
+                            Active Price: <strong className="text-[#14171A]">{formatPrice(effectivePrice)}</strong>
+                          </span>
+                          {v.priceModifier !== 0 && (
+                            <span className="text-[#1F4E43] font-medium">
+                              Modifier: {v.priceModifier > 0 ? `+$${v.priceModifier}` : `-$${Math.abs(v.priceModifier)}`}
+                            </span>
+                          )}
                         </div>
 
                         {/* Quick Stock Setter Buttons */}
