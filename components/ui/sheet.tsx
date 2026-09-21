@@ -47,7 +47,7 @@ export function Sheet({
     <div className="fixed inset-0 z-50 flex" role="dialog" aria-modal="true" aria-labelledby={title ? "sheet-title" : undefined}>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/40 backdrop-blur-xs transition-opacity duration-300"
+        className="fixed inset-0 bg-black/40 backdrop-blur-xs transition-opacity duration-300 animate-in fade-in"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -56,7 +56,9 @@ export function Sheet({
       <div
         className={cn(
           "fixed inset-y-0 z-50 flex flex-col w-full max-w-md bg-white shadow-2xl transition-transform duration-300 ease-in-out",
-          side === "right" ? "right-0" : "left-0",
+          side === "right"
+            ? "right-0 animate-in slide-in-from-right duration-300"
+            : "left-0 animate-in slide-in-from-left duration-300",
           className
         )}
       >

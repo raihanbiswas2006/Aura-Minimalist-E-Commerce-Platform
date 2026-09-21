@@ -14,6 +14,26 @@ interface SearchAutocompleteProps {
   isMobileModal?: boolean;
 }
 
+function highlightMatch(text: string, query: string) {
+  if (!query || !query.trim()) return text;
+  const escaped = query.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const regex = new RegExp(`(${escaped})`, "gi");
+  const parts = text.split(regex);
+  return (
+    <>
+      {parts.map((part, i) =>
+        regex.test(part) ? (
+          <span key={i} className="bg-[#1F4E43]/15 text-[#1F4E43] font-semibold rounded-xs px-0.5">
+            {part}
+          </span>
+        ) : (
+          part
+        )
+      )}
+    </>
+  );
+}
+
 export function SearchAutocomplete({ onSearchSubmit, className = "", isMobileModal = false }: SearchAutocompleteProps) {
   const router = useRouter();
   const [query, setQuery] = useState("");
@@ -168,7 +188,7 @@ export function SearchAutocomplete({ onSearchSubmit, className = "", isMobileMod
                           selectedIndex === idx ? "bg-[#1F4E43]/10 text-[#1F4E43]" : "text-[#14171A] hover:bg-[#FAF9F6]"
                         }`}
                       >
-                        <span>{cat.title}</span>
+                        <span>{highlightMatch(cat.title, query)}</span>
                         <ArrowRight className="w-3.5 h-3.5 text-[#9CA3AF]" />
                       </Link>
                     ))}
@@ -209,8 +229,12 @@ export function SearchAutocomplete({ onSearchSubmit, className = "", isMobileMod
                             />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-xs font-medium text-[#14171A] truncate">{prod.title}</p>
-                            <p className="text-[11px] text-[#6B7280] truncate">{prod.subtitle}</p>
+                            <p className="text-xs font-medium text-[#14171A] truncate">
+                              {highlightMatch(prod.title, query)}
+                            </p>
+                            <p className="text-[11px] text-[#6B7280] truncate">
+                              {highlightMatch(prod.subtitle, query)}
+                            </p>
                           </div>
                           <div className="text-right shrink-0">
                             <span className="text-xs font-semibold text-[#14171A]">{formatPrice(activePrice)}</span>

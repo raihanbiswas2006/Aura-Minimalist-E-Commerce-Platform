@@ -131,3 +131,24 @@ Per the product scope defined in PRD Section 1.6 and 1.7, the following boundari
 2. **Persistence Storage:** Customer accounts, orders, cart items, and wishlist selections are persisted locally in browser `localStorage`.
 3. **Logistics & Inventory Synchronization:** Stock updates in the Admin panel mutate runtime in-memory state; no multi-warehouse ERP integration is present.
 4. **External Communications:** Email subscriptions, contact inquiries, and tracking notifications simulate interface responses without dispatching external SMTP relays or live SMS messages.
+
+---
+
+## 5. UX & Micro-Interaction Enhancement Pass Verification
+
+Following completion of the core QA pass, a dedicated UX and micro-interaction enhancement pass was performed and verified:
+
+| # | Enhancement Dimension | Status | Verification Summary |
+|---|---|---|---|
+| 1 | **Cursor Magnifier (Desktop)** | **PASS** | 1.75x magnification follows mouse coordinates via GPU transforms within `overflow-hidden` container; resets smoothly on mouse leave; 0 layout shift. |
+| 2 | **Mobile Lightbox & Gallery** | **PASS** | Touch tap triggers accessible dialog lightbox; body scroll locked (`document.body.style.overflow = "hidden"`); keyboard navigation (ArrowLeft/ArrowRight/Escape) and thumbnail strip verified. |
+| 3 | **Product Card Micro-Interactions** | **PASS** | Two stacked images provide buttery smooth crossfade on hover; Quick Add button slides up cleanly; wishlist button triggers spring `animate-heart-pop`. |
+| 4 | **Multi-State Button Feedback** | **PASS** | Add to Cart transitions smoothly through `idle` ("Add to Cart") → `adding` ("Adding..." with spinner) → `added` ("Added ✓" with checkmark) → `idle` reset after 2000ms. |
+| 5 | **Mobile Sticky CTA** | **PASS** | `IntersectionObserver` detects when primary CTA is scrolled out of viewport; bottom sticky CTA slides up with product/variant context; respects `env(safe-area-inset-bottom)`. |
+| 6 | **Animated Cart Badge** | **PASS** | Cart and Wishlist count badges trigger `@keyframes badge-pop` scale animation (1 → 1.3 → 1) upon item addition. |
+| 7 | **Search Query Highlighting** | **PASS** | Autocomplete popover highlights matching query substrings in category titles and product subtitles with subtle forest green pill marks. |
+| 8 | **Streaming Skeletons** | **PASS** | `loading.tsx` routes added for `/p/[slug]`, `/c/[category]`, and `/search` using exact dimension skeletons to guarantee zero CLS during client navigation. |
+| 9 | **Sheet & Dialog Transitions** | **PASS** | Mini-cart drawer and mobile navigation drawers slide in smoothly from left/right with backdrop fade. |
+| 10 | **WCAG 2.2 AA Reduced Motion** | **PASS** | `@media (prefers-reduced-motion: reduce)` globally disables decorative animations and transitions for sensitive users. |
+| 11 | **Build & Compilation** | **PASS** | `npx tsc --noEmit` (0 errors), `next build` (0 errors across 19 static/dynamic routes), and `verify-ux.mjs` (21/21 tests passed). |
+

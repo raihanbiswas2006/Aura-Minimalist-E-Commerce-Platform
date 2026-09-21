@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Minus, ShoppingBag, Zap, Shield, RotateCcw, Truck, Check, Bell } from "lucide-react";
+import { Plus, Minus, ShoppingBag, Zap, Shield, RotateCcw, Truck, Check, Bell, Loader2 } from "lucide-react";
 import { Product, ProductVariant } from "@/types";
 import { formatPrice } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -27,9 +27,11 @@ export function VariantSelector({ product }: VariantSelectorProps) {
   );
 
   const [quantity, setQuantity] = useState(1);
-  const [isAdded, setIsAdded] = useState(false);
+  const [cartButtonState, setCartButtonState] = useState<"idle" | "adding" | "added">("idle");
   const [isNotified, setIsNotified] = useState(false);
+  const [isStickyVisible, setIsStickyVisible] = useState(false);
 
+  const primaryCtaRef = useRef<HTMLDivElement>(null);
   const addItemToCart = useCartStore((state) => state.addItem);
 
   // Price calculations
@@ -41,6 +43,27 @@ export function VariantSelector({ product }: VariantSelectorProps) {
   const isOutOfStock = selectedVariant.stockQuantity === 0;
   const isLowStock = !isOutOfStock && selectedVariant.stockQuantity < 5;
 
+  // IntersectionObserver to show mobile sticky CTA only when primary CTA scrolls out of view
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        // Show sticky bar only when primary CTA is scrolled ABOVE the viewport
+        if (!entry.isIntersecting && entry.boundingClientRect.top < 0) {
+          setIsStickyVisible(true);
+        } else {
+          setIsStickyVisible(false);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (primaryCtaRef.current) {
+      observer.observe(primaryCtaRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
   const handleQuantityChange = (newQty: number) => {
     if (newQty >= 1 && newQty <= selectedVariant.stockQuantity) {
       setQuantity(newQty);
@@ -48,30 +71,37 @@ export function VariantSelector({ product }: VariantSelectorProps) {
   };
 
   const handleAddToCart = () => {
-    if (isOutOfStock) return;
+    if (isOutOfStock || cartButtonState === "adding") return;
 
-    addItemToCart({
-      id: `${product.id}-${selectedVariant.id}`,
-      productId: product.id,
-      variantId: selectedVariant.id,
-      title: product.title,
-      variantName: selectedVariant.name,
-      unitPrice: activePrice,
-      quantity,
-      imageUrl: product.images[0]?.url || "",
-      maxStock: selectedVariant.stockQuantity,
-      slug: product.slug,
-    });
+    setCartButtonState("adding");
 
-    trackEvent("add_to_cart", {
-      productId: product.id,
-      variantId: selectedVariant.id,
-      quantity,
-      price: activePrice,
-    });
+    setTimeout(() => {
+      addItemToCart({
+        id: `${product.id}-${selectedVariant.id}`,
+        productId: product.id,
+        variantId: selectedVariant.id,
+        title: product.title,
+        variantName: selectedVariant.name,
+        unitPrice: activePrice,
+        quantity,
+        imageUrl: product.images[0]?.url || "",
+        maxStock: selectedVariant.stockQuantity,
+        slug: product.slug,
+      });
 
-    setIsAdded(true);
-    setTimeout(() => setIsAdded(false), 2000);
+      trackEvent("add_to_cart", {
+        productId: product.id,
+        variantId: selectedVariant.id,
+        quantity,
+        price: activePrice,
+      });
+
+      setCartButtonState("added");
+
+      setTimeout(() => {
+        setCartButtonState("idle");
+      }, 2000);
+    }, 320);
   };
 
   const handleBuyNow = () => {
@@ -149,10 +179,10 @@ export function VariantSelector({ product }: VariantSelectorProps) {
                     setSelectedVariant(v);
                     setQuantity(1);
                   }}
-                  className={`relative flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-medium transition-all cursor-pointer ${
+                  className={`relative flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-medium transition-all duration-150 cursor-pointer active:scale-98 ${
                     isSelected
-                      ? "border-[#1F4E43] bg-[#1F4E43]/5 text-[#1F4E43] ring-1 ring-[#1F4E43]"
-                      : "border-[#E4E7EB] hover:border-[#D1D5DB] text-[#14171A] bg-white"
+                      ? "border-[#1F4E43] bg-[#1F4E43]/5 text-[#1F4E43] ring-1 ring-[#1F4E43] font-semibold"
+                      : "border-[#E4E7EB] hover:border-[#D1D5DB] text-[#14171A] bg-white hover:bg-[#FAF9F6]"
                   } ${vOutOfStock ? "opacity-60" : ""}`}
                 >
                   <span
@@ -213,54 +243,63 @@ export function VariantSelector({ product }: VariantSelectorProps) {
       </div>
 
       {/* Quantity Stepper & Add to Cart Actions */}
-      <div className="space-y-3 pt-2">
+      <div ref={primaryCtaRef} className="space-y-3 pt-2">
         <div className="flex gap-3">
           {/* Stepper */}
-          <div className="flex items-center border border-[#E4E7EB] rounded-md bg-white">
+          <div className="flex items-center border border-[#E4E7EB] rounded-lg bg-white shadow-2xs">
             <button
               type="button"
               disabled={quantity <= 1 || isOutOfStock}
               onClick={() => handleQuantityChange(quantity - 1)}
-              className="p-3 text-[#6B7280] hover:text-[#14171A] disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+              className="p-3 text-[#6B7280] hover:text-[#14171A] disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors active:scale-95"
               aria-label="Decrease quantity"
             >
               <Minus className="w-4 h-4" />
             </button>
-            <span className="w-10 text-center text-sm font-semibold text-[#14171A]">
+            <span className="w-10 text-center text-sm font-semibold text-[#14171A] select-none">
               {isOutOfStock ? 0 : quantity}
             </span>
             <button
               type="button"
               disabled={quantity >= selectedVariant.stockQuantity || isOutOfStock}
               onClick={() => handleQuantityChange(quantity + 1)}
-              className="p-3 text-[#6B7280] hover:text-[#14171A] disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+              className="p-3 text-[#6B7280] hover:text-[#14171A] disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors active:scale-95"
               aria-label="Increase quantity"
             >
               <Plus className="w-4 h-4" />
             </button>
           </div>
 
-          {/* Add to Cart CTA */}
+          {/* Add to Cart CTA with 3-State Feedback */}
           <Button
             type="button"
             variant="primary"
             size="lg"
-            disabled={isOutOfStock}
+            disabled={isOutOfStock || cartButtonState === "adding"}
             onClick={handleAddToCart}
-            className={`flex-1 flex items-center justify-center gap-2 transition-all ${
-              isAdded ? "bg-[#1B9E60] hover:bg-[#18804E]" : ""
+            className={`flex-1 flex items-center justify-center gap-2 transition-all duration-200 ${
+              cartButtonState === "added"
+                ? "bg-[#1B9E60] hover:bg-[#18804E] text-white"
+                : cartButtonState === "adding"
+                ? "opacity-80"
+                : ""
             }`}
           >
             {isOutOfStock ? (
               <span>Out of Stock</span>
-            ) : isAdded ? (
+            ) : cartButtonState === "adding" ? (
               <>
-                <Check className="w-5 h-5" />
-                <span>Added to Bag</span>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Adding...</span>
+              </>
+            ) : cartButtonState === "added" ? (
+              <>
+                <Check className="w-4 h-4" />
+                <span>Added ✓</span>
               </>
             ) : (
               <>
-                <ShoppingBag className="w-5 h-5" />
+                <ShoppingBag className="w-4 h-4" />
                 <span>Add to Cart • {formatPrice(activePrice * quantity)}</span>
               </>
             )}
@@ -313,21 +352,40 @@ export function VariantSelector({ product }: VariantSelectorProps) {
         </div>
       </div>
 
-      {/* Mobile Sticky Bottom Action Bar per PRD Section 8.2 */}
-      <div className="fixed md:hidden bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md p-3 border-t border-[#E4E7EB] shadow-lg flex items-center justify-between gap-3">
-        <div>
-          <p className="text-[11px] text-[#6B7280] font-medium">Total</p>
+      {/* Mobile Sticky Bottom Action Bar (Appears subtly only when primary CTA scrolls off-screen) */}
+      <div
+        className={`fixed md:hidden bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md px-4 py-3 border-t border-[#E4E7EB] shadow-lg flex items-center justify-between gap-4 transition-all duration-300 ease-out pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] ${
+          isStickyVisible
+            ? "translate-y-0 opacity-100 pointer-events-auto"
+            : "translate-y-full opacity-0 pointer-events-none"
+        }`}
+      >
+        <div className="min-w-0">
+          <p className="text-[11px] text-[#6B7280] font-medium truncate">
+            {product.title} • {selectedVariant.color.name}
+          </p>
           <p className="text-base font-bold text-[#14171A]">
             {formatPrice(activePrice * (isOutOfStock ? 1 : quantity))}
           </p>
         </div>
+
         <Button
           type="button"
-          disabled={isOutOfStock}
+          disabled={isOutOfStock || cartButtonState === "adding"}
           onClick={handleAddToCart}
-          className="flex-1 h-12 text-sm font-semibold"
+          className={`h-11 px-5 text-sm font-semibold transition-all duration-200 shrink-0 ${
+            cartButtonState === "added"
+              ? "bg-[#1B9E60] hover:bg-[#18804E] text-white"
+              : ""
+          }`}
         >
-          {isOutOfStock ? "Out of Stock" : isAdded ? "Added ✓" : "Add to Cart"}
+          {isOutOfStock
+            ? "Out of Stock"
+            : cartButtonState === "adding"
+            ? "Adding..."
+            : cartButtonState === "added"
+            ? "Added ✓"
+            : "Add to Cart"}
         </Button>
       </div>
     </div>

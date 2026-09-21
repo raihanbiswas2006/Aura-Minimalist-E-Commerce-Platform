@@ -35,6 +35,8 @@ export function Header() {
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [cartBadgePopping, setCartBadgePopping] = useState(false);
+  const [wishlistBadgePopping, setWishlistBadgePopping] = useState(false);
 
   const totalCartCount = useCartStore((state) =>
     state.items.reduce((sum, item) => sum + item.quantity, 0)
@@ -42,6 +44,27 @@ export function Header() {
   const openCartDrawer = useCartStore((state) => state.openDrawer);
   const wishlistCount = useWishlistStore((state) => state.items.length);
   const { user, isAuthenticated, switchUser, logout } = useAuthStore();
+
+  const prevCartRef = React.useRef(totalCartCount);
+  const prevWishlistRef = React.useRef(wishlistCount);
+
+  useEffect(() => {
+    if (totalCartCount > prevCartRef.current) {
+      setCartBadgePopping(true);
+      const t = setTimeout(() => setCartBadgePopping(false), 400);
+      return () => clearTimeout(t);
+    }
+    prevCartRef.current = totalCartCount;
+  }, [totalCartCount]);
+
+  useEffect(() => {
+    if (wishlistCount > prevWishlistRef.current) {
+      setWishlistBadgePopping(true);
+      const t = setTimeout(() => setWishlistBadgePopping(false), 400);
+      return () => clearTimeout(t);
+    }
+    prevWishlistRef.current = wishlistCount;
+  }, [wishlistCount]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -141,12 +164,16 @@ export function Header() {
               {/* Wishlist Link with Dynamic Badge */}
               <Link
                 href="/wishlist"
-                className="relative p-2 text-[#14171A] hover:text-[#1F4E43] rounded-full hover:bg-black/5 transition-colors focus-visible:outline-2 focus-visible:outline-[#1F4E43]"
+                className="relative p-2 text-[#14171A] hover:text-[#1F4E43] rounded-full hover:bg-black/5 transition-all duration-150 active:scale-95 focus-visible:outline-2 focus-visible:outline-[#1F4E43]"
                 aria-label={`Wishlist (${wishlistCount} items)`}
               >
                 <Heart className="w-5 h-5" />
                 {wishlistCount > 0 && (
-                  <span className="absolute top-1 right-1 flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-[#1F4E43] rounded-full ring-2 ring-white animate-in zoom-in">
+                  <span
+                    className={`absolute top-1 right-1 flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-[#1F4E43] rounded-full ring-2 ring-white ${
+                      wishlistBadgePopping ? "animate-badge-pop" : "animate-in zoom-in"
+                    }`}
+                  >
                     {wishlistCount}
                   </span>
                 )}
@@ -157,7 +184,7 @@ export function Header() {
                 <button
                   type="button"
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                  className="p-2 text-[#14171A] hover:text-[#1F4E43] rounded-full hover:bg-black/5 transition-colors focus-visible:outline-2 focus-visible:outline-[#1F4E43] flex items-center gap-1 cursor-pointer"
+                  className="p-2 text-[#14171A] hover:text-[#1F4E43] rounded-full hover:bg-black/5 transition-all duration-150 active:scale-95 focus-visible:outline-2 focus-visible:outline-[#1F4E43] flex items-center gap-1 cursor-pointer"
                   aria-label="Customer account menu"
                   aria-expanded={isUserMenuOpen}
                 >
@@ -254,12 +281,16 @@ export function Header() {
               <button
                 type="button"
                 onClick={openCartDrawer}
-                className="relative p-2 text-[#14171A] hover:text-[#1F4E43] rounded-full hover:bg-black/5 transition-colors focus-visible:outline-2 focus-visible:outline-[#1F4E43] cursor-pointer"
+                className="relative p-2 text-[#14171A] hover:text-[#1F4E43] rounded-full hover:bg-black/5 transition-all duration-150 active:scale-95 focus-visible:outline-2 focus-visible:outline-[#1F4E43] cursor-pointer"
                 aria-label={`Shopping bag containing ${totalCartCount} items`}
               >
                 <ShoppingBag className="w-5 h-5" />
                 {totalCartCount > 0 && (
-                  <span className="absolute top-1 right-1 flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-[#1F4E43] rounded-full ring-2 ring-white animate-in zoom-in">
+                  <span
+                    className={`absolute top-1 right-1 flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-[#1F4E43] rounded-full ring-2 ring-white ${
+                      cartBadgePopping ? "animate-badge-pop" : "animate-in zoom-in"
+                    }`}
+                  >
                     {totalCartCount}
                   </span>
                 )}

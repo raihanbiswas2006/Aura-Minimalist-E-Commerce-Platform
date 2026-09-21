@@ -113,3 +113,35 @@ node scripts/qa-audit.mjs
    - About: Displays portfolio concept banner and conceptual sustainability standards.
    - Contact: Clearly labels email, telephone, and showroom address as demonstration placeholders.
    - Reviews: Labeled as sample reviews with "Verified Buyer (Demo)" badges.
+
+---
+
+### Protocol 10: UX & Micro-Interaction Enhancements Verification
+1. **Product Image Magnifier (Desktop):**
+   - Navigate to `/p/nordic-lounge-chair`.
+   - Hover cursor across the main image.
+   - Result: 1.75x magnification smoothly focal-points around the mouse position using compositor transforms; no layout shift; container boundary remains strict; smoothly resets on cursor exit.
+2. **Fullscreen Gallery Lightbox:**
+   - Click the image or zoom trigger button.
+   - Result: Lightbox opens with backdrop fade; background page scroll is locked (`overflow: hidden`); image counter, navigation arrows, and thumbnail strip are visible; dismisses via `Escape` or `X` button.
+3. **Product Card Image Crossfade:**
+   - Navigate to `/c/furniture`.
+   - Hover over product cards.
+   - Result: Secondary image crossfades smoothly in 500ms without flicker; Quick Add button slides up cleanly; wishlist button triggers spring heart-pop animation.
+4. **Multi-State Add to Cart Feedback:**
+   - On `/p/nordic-lounge-chair`, click "Add to Cart".
+   - Result: Button transitions instantly: `Add to Cart` → `Adding...` (with spinner) → `Added ✓` (with checkmark in `#1B9E60`) → reverts to `Add to Cart` after 2000ms.
+5. **Mobile Sticky Action Bar:**
+   - Open PDP at mobile viewport (375px width).
+   - Scroll down past the primary Add to Cart button.
+   - Result: Bottom sticky action bar slides up smoothly with product context and current variant pricing; respects iOS safe areas; hides automatically when primary CTA is back in view.
+6. **Search Query Highlighting:**
+   - In header search bar, enter query "lounge".
+   - Result: Suggestions display matching substring enclosed in subtle green pill highlighting (`bg-[#1F4E43]/15`).
+7. **Streaming Route Skeletons:**
+   - Navigate between `/p/nordic-lounge-chair`, `/c/furniture`, and `/search`.
+   - Result: Zero CLS instant skeleton screens render during route transitions.
+8. **Automated Verification Script:**
+   - Run `node scripts/verify-ux.mjs`.
+   - Result: 21/21 static and contract assertions pass with zero failures.
+
