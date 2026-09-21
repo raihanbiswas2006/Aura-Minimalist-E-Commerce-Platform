@@ -14,6 +14,8 @@ import { VariantSelector } from "@/components/product/variant-selector";
 import { ReviewSection } from "@/components/review/review-section";
 import { AccordionItem } from "@/components/ui/accordion";
 import { ProductCard } from "@/components/product/product-card";
+import { formatPrice } from "@/lib/utils";
+import { FREE_SHIPPING_THRESHOLD } from "@/lib/constants";
 
 interface ProductPageProps {
   params: Promise<{ slug: string }>;
@@ -35,8 +37,8 @@ export async function generateMetadata({
 
   return {
     title: `${product.title} | Aura Living`,
-    description: `${product.subtitle}. ${product.description.slice(0, 150)}... Available for $${activePrice.toFixed(
-      2
+    description: `${product.subtitle}. ${product.description.slice(0, 150)}... Available for ${formatPrice(
+      activePrice
     )}.`,
     alternates: {
       canonical: `https://aura-living.demo/p/${product.slug}`,
@@ -98,8 +100,8 @@ export default async function ProductDetailsPage({ params }: ProductPageProps) {
         offers: {
           "@type": "Offer",
           url: `https://aura-living.demo/p/${product.slug}`,
-          priceCurrency: "USD",
-          price: activePrice.toFixed(2),
+          priceCurrency: "BDT",
+          price: activePrice.toString(),
           availability:
             product.variants.some((v) => v.stockQuantity > 0)
               ? "https://schema.org/InStock"
@@ -254,13 +256,16 @@ export default async function ProductDetailsPage({ params }: ProductPageProps) {
               <AccordionItem id="delivery" title="Delivery & White-Glove Service">
                 <div className="text-xs text-[#4B5563] space-y-2">
                   <p>
-                    • <strong>Standard Delivery:</strong> 3-5 business days. Complimentary on orders over $150.
+                    • <strong>Inside Dhaka:</strong> 1–3 business days (৳60). Complimentary on orders over {formatPrice(FREE_SHIPPING_THRESHOLD)}.
                   </p>
                   <p>
-                    • <strong>Express Courier:</strong> 1-2 business days ($25.00).
+                    • <strong>Outside Dhaka:</strong> 3–5 business days (৳120).
                   </p>
                   <p>
-                    • <strong>Simulated Logistics:</strong> Sample ground delivery policy demonstrating threshold calculations ($150 complimentary tier).
+                    • <strong>Nationwide Delivery:</strong> 4–7 business days (৳150).
+                  </p>
+                  <p>
+                    • <strong>Simulated Logistics:</strong> Sample ground delivery policy demonstrating threshold calculations ({formatPrice(FREE_SHIPPING_THRESHOLD)} complimentary tier).
                   </p>
                 </div>
               </AccordionItem>

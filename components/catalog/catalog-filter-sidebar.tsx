@@ -3,6 +3,7 @@
 import React from "react";
 import { CATEGORIES } from "@/data/categories";
 import { Star, Check, X } from "lucide-react";
+import { BDT_PRICE_RANGES } from "@/lib/constants";
 
 export interface FilterState {
   category: string;
@@ -21,13 +22,7 @@ interface CatalogFilterSidebarProps {
   isMobileDrawer?: boolean;
 }
 
-const PRICE_RANGES = [
-  { label: "All Prices", min: undefined, max: undefined },
-  { label: "Under $50", min: 0, max: 50 },
-  { label: "$50 – $150", min: 50, max: 150 },
-  { label: "$150 – $300", min: 150, max: 300 },
-  { label: "$300 & Above", min: 300, max: undefined },
-];
+const PRICE_RANGES = BDT_PRICE_RANGES;
 
 const AVAILABLE_COLORS = [
   { name: "Cream", hex: "#F3EFEA" },

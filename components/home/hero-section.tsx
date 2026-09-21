@@ -44,7 +44,7 @@ export function HeroSection() {
                 <p className="text-[11px] text-[#6B7280]">Oak &amp; Flax (Sample Spec)</p>
               </div>
               <div>
-                <p className="text-lg font-serif font-bold text-[#14171A]">$150+</p>
+                <p className="text-lg font-serif font-bold text-[#14171A]">৳5,000+</p>
                 <p className="text-[11px] text-[#6B7280]">Free Delivery (Demo Tier)</p>
               </div>
               <div>
@@ -75,7 +75,7 @@ export function HeroSection() {
                   Nordic Lounge Chair
                 </p>
                 <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#F3F4F6]">
-                  <span className="text-xs font-semibold text-[#1F4E43]">$349.00</span>
+                  <span className="text-xs font-semibold text-[#1F4E43]">৳34,900</span>
                   <Link
                     href="/p/nordic-lounge-chair"
                     className="text-xs text-[#14171A] hover:text-[#1F4E43] font-medium flex items-center gap-1"

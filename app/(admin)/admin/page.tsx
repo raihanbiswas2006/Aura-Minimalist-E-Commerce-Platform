@@ -177,7 +177,7 @@ export default function AdminPage() {
                           </span>
                           {v.priceModifier !== 0 && (
                             <span className="text-[#1F4E43] font-medium">
-                              Modifier: {v.priceModifier > 0 ? `+$${v.priceModifier}` : `-$${Math.abs(v.priceModifier)}`}
+                              Modifier: {v.priceModifier > 0 ? `+${formatPrice(v.priceModifier)}` : `-${formatPrice(Math.abs(v.priceModifier))}`}
                             </span>
                           )}
                         </div>

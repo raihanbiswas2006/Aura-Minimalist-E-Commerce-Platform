@@ -3,13 +3,14 @@
 import React from "react";
 import { Truck, CheckCircle2 } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
+import { FREE_SHIPPING_THRESHOLD } from "@/lib/constants";
 
 interface FreeShippingMeterProps {
   subtotal: number;
   hasFreeShippingCoupon?: boolean;
 }
 
-const THRESHOLD = 150.0;
+const THRESHOLD = FREE_SHIPPING_THRESHOLD;
 
 export function FreeShippingMeter({ subtotal, hasFreeShippingCoupon }: FreeShippingMeterProps) {
   const isQualified = subtotal >= THRESHOLD || hasFreeShippingCoupon;

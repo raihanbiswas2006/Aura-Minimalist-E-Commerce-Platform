@@ -152,3 +152,49 @@ Following completion of the core QA pass, a dedicated UX and micro-interaction e
 | 10 | **WCAG 2.2 AA Reduced Motion** | **PASS** | `@media (prefers-reduced-motion: reduce)` globally disables decorative animations and transitions for sensitive users. |
 | 11 | **Build & Compilation** | **PASS** | `npx tsc --noEmit` (0 errors), `next build` (0 errors across 19 static/dynamic routes), and `verify-ux.mjs` (21/21 tests passed). |
 
+---
+
+## 6. Bangladesh Market Localization & Currency Migration Pass
+
+**Pass Identifier:** `BD-LOC-2026-V1`  
+**Completion Date:** September 22, 2026  
+**Status:** 100% Complete & Verified  
+
+### 6.1 Localization Objectives & Scope
+The platform underwent a complete localization pass converting generic USD-based international assumptions into a cohesive, realistic Bangladesh-focused shopping experience while strictly preserving all existing minimalist aesthetics, design tokens, micro-interactions, WCAG 2.2 AA accessibility standards, and SEO architecture.
+
+### 6.2 Key Implementations
+1. **Centralized Currency Architecture:**
+   - Introduced `lib/constants.ts` declaring `CURRENCY_CODE = "BDT"`, `CURRENCY_SYMBOL = "৳"`, `FREE_SHIPPING_THRESHOLD = 5000`, and `SHIPPING_TIERS`.
+   - Built `formatPrice` / `formatCurrency` in `lib/utils.ts` utilizing `en-BD` numeric grouping with zero decimal places, guaranteeing `৳1,250`, `৳34,900`, etc.
+2. **Catalog Price Realignment:**
+   - Reviewed and converted all 16 catalog items in `data/products.ts` to sensible Bangladesh market prices (e.g. Lounge Chair: ৳38,500 base / ৳34,900 sale; Ceramic Lamp: ৳18,500 base / ৳15,500 sale; Linen Throw Pillow: ৳3,500 base).
+   - Ensured exact price alignment across Homepage, PLP, Search, PDP, Wishlist, Cart Drawer, Cart Page, Checkout, Order Confirmation, and Admin.
+3. **Bangladesh Tiered Shipping:**
+   - Replaced generic international shipping with 3 realistic Bangladesh tiers:
+     - **Inside Dhaka:** ৳60 (1–3 working days)
+     - **Outside Dhaka:** ৳120 (3–5 working days)
+     - **Nationwide Delivery:** ৳150 (4–7 working days)
+   - Free delivery automatically unlocks on orders exceeding ৳5,000.
+4. **Bangladesh Checkout Address System:**
+   - Implemented address form with Full Name, Mobile Number, Email Address, Division (dropdown with 8 BD divisions: Dhaka, Chattogram, Rajshahi, Khulna, Barishal, Sylhet, Rangpur, Mymensingh), District, Area / Upazila / Thana, Detailed Address, and Postal Code.
+   - Built native Bangladesh mobile validation supporting `01XXXXXXXXX` and `+8801XXXXXXXXX` (`^(?:\+?880|0)?1[3-9]\d{8}$`) with telephone keyboard optimization (`inputMode="tel"`).
+5. **Simulated Bangladesh Payment Ecosystem:**
+   - Integrated simulated payment options: Cash on Delivery (COD), bKash Demo (with interactive sandbox wallet number prompt), Nagad Demo, Rocket Demo, and auxiliary Demo Card.
+   - Prominent sandbox simulation notices explicitly clarify no real financial transactions or credential harvesting occurs.
+6. **Coupon System Conversion:**
+   - `SAVE10`: 10% discount on orders exceeding ৳2,500.
+   - `FREESHIP`: ৳60 delivery deduction (complimentary shipping).
+   - `WELCOME20`: ৳200 flat discount on orders exceeding ৳3,000.
+7. **JSON-LD & Metadata Structured Data:**
+   - Server-rendered JSON-LD graphs updated to `priceCurrency: "BDT"` with corresponding BDT prices.
+   - Dynamic page metadata and delivery accordion updated to Bangladesh context.
+8. **Admin Panel Localization:**
+   - Inventory controller, order lifecycle manager, and JSON payloads fully bound to BDT and `formatPrice`.
+
+### 6.3 Automated Test & Verification Results
+- **TypeScript Strict Compilation (`tsc --noEmit`):** 0 errors.
+- **UX & Micro-Interaction Static & Contract Verification (`verify-ux.mjs`):** 21/21 tests passed (100%).
+- **Production Build (`npm run build`):** Compiled successfully with 0 errors.
+
+

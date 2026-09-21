@@ -8,7 +8,7 @@ export function AnnouncementBar() {
       <div className="flex items-center gap-2">
         <Sparkles className="w-3.5 h-3.5 text-[#F59E0B] shrink-0" />
         <span>
-          Enjoy complimentary domestic delivery on orders over $150 • Demo Environment
+          Enjoy complimentary delivery across Bangladesh on orders over ৳5,000 • Demo Environment
         </span>
         <span className="hidden md:inline text-white/40">|</span>
         <Link

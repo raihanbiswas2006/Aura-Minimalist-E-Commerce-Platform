@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 
 export const metadata = {
   title: "Shipping & Delivery Policy | Aura Living",
-  description: "Transparent delivery times, carbon-neutral shipping, and the $150 complimentary threshold.",
+  description: "Transparent delivery times, Bangladesh shipping matrix, and the ৳5,000 complimentary threshold.",
 };
 
 export default function ShippingPage() {
@@ -17,7 +17,7 @@ export default function ShippingPage() {
           Demo Environment
         </span>
         <span>
-          Aura Living is a portfolio and client validation platform. Delivery thresholds, fees, and timelines below represent simulated business calculations.
+          Aura Living is a portfolio and client validation platform. Delivery thresholds, fees, and timelines below represent simulated business calculations for the Bangladesh market.
         </span>
       </div>
 
@@ -40,10 +40,10 @@ export default function ShippingPage() {
             Complimentary Threshold (Demo)
           </span>
           <h2 className="font-serif text-2xl font-bold">
-            Free Delivery on Domestic Orders Over $150
+            Free Delivery Across Bangladesh on Orders Over ৳5,000
           </h2>
           <p className="text-xs text-white/80 max-w-md">
-            Reach $150.00 subtotal in your bag to automatically qualify for complimentary standard delivery in the checkout simulator.
+            Reach ৳5,000 subtotal in your bag to automatically qualify for complimentary standard delivery in the checkout simulator.
           </p>
         </div>
         <Link href="/c/furniture" className="shrink-0">
@@ -61,37 +61,56 @@ export default function ShippingPage() {
           </h3>
         </div>
         <div className="divide-y divide-[#E4E7EB] text-xs">
+          {/* Inside Dhaka */}
           <div className="p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="space-y-1">
               <p className="font-semibold text-sm text-[#14171A] flex items-center gap-2">
                 <Truck className="w-4 h-4 text-[#1F4E43]" />
-                Standard Ground Delivery (Simulated)
+                Inside Dhaka Metropolitan Delivery
               </p>
               <p className="text-[#6B7280]">
-                Simulated ground transit. Includes mock tracking number generation upon order placement.
+                Standard home courier delivery within Dhaka city. Includes mock tracking number generation upon order placement.
               </p>
             </div>
             <div className="text-right shrink-0">
               <span className="font-bold text-sm text-[#14171A]">
-                FREE over $150 <span className="font-normal text-[#6B7280]">($15.00 under $150)</span>
+                FREE over ৳5,000 <span className="font-normal text-[#6B7280]">(৳60 under ৳5,000)</span>
               </span>
-              <p className="text-[#9CA3AF]">3 – 5 Business Days</p>
+              <p className="text-[#9CA3AF]">1 – 3 Business Days</p>
             </div>
           </div>
 
+          {/* Outside Dhaka */}
           <div className="p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="space-y-1">
               <p className="font-semibold text-sm text-[#14171A] flex items-center gap-2">
                 <Clock className="w-4 h-4 text-[#1F4E43]" />
-                Express Priority Courier
+                Outside Dhaka Regional Delivery
               </p>
               <p className="text-[#6B7280]">
-                Immediate warehouse dispatch with priority transport routes.
+                Express transit to divisional headquarters, major district hubs, and sub-districts across Bangladesh.
               </p>
             </div>
             <div className="text-right shrink-0">
-              <span className="font-bold text-sm text-[#14171A]">$25.00 Flat Rate</span>
-              <p className="text-[#9CA3AF]">1 – 2 Business Days</p>
+              <span className="font-bold text-sm text-[#14171A]">৳120 Flat Rate</span>
+              <p className="text-[#9CA3AF]">3 – 5 Business Days</p>
+            </div>
+          </div>
+
+          {/* Nationwide / Remote */}
+          <div className="p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <p className="font-semibold text-sm text-[#14171A] flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-[#1F4E43]" />
+                Nationwide &amp; Remote Area Delivery
+              </p>
+              <p className="text-[#6B7280]">
+                Specialized logistics routing ensuring full coverage to all upazilas and remote postal areas.
+              </p>
+            </div>
+            <div className="text-right shrink-0">
+              <span className="font-bold text-sm text-[#14171A]">৳150 Flat Rate</span>
+              <p className="text-[#9CA3AF]">4 – 7 Business Days</p>
             </div>
           </div>
         </div>

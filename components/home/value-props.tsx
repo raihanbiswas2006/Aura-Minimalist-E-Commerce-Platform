@@ -5,8 +5,8 @@ export function ValueProps() {
   const items = [
     {
       icon: Truck,
-      title: "Carbon-Neutral Policy (Demo)",
-      description: "Simulated 100% offset ground transit on domestic orders over $150.",
+      title: "Nationwide Delivery (Demo)",
+      description: "Delivering across Bangladesh with complimentary shipping on orders over ৳5,000 (Demo).",
     },
     {
       icon: RotateCcw,

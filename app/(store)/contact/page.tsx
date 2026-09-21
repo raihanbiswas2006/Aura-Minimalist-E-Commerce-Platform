@@ -72,8 +72,8 @@ export default function ContactPage() {
               <Phone className="w-4 h-4" />
             </div>
             <h3 className="font-semibold text-sm text-[#14171A]">Telephone Placeholder</h3>
-            <p className="text-xs text-[#6B7280]">+1 (415) 555-0192 (Demo Sandbox)</p>
-            <p className="text-[11px] text-[#9CA3AF]">Sample support hours</p>
+            <p className="text-xs text-[#6B7280]">+880 9612-000000 (Demo Support Hotline)</p>
+            <p className="text-[11px] text-[#9CA3AF]">Sample demonstration hours</p>
           </div>
 
           <div className="p-6 bg-white rounded-xl border border-[#E4E7EB] space-y-2">
@@ -81,7 +81,7 @@ export default function ContactPage() {
               <MapPin className="w-4 h-4" />
             </div>
             <h3 className="font-semibold text-sm text-[#14171A]">Sample Design Showroom (Concept)</h3>
-            <p className="text-xs text-[#6B7280]">742 Montgomery St, San Francisco, CA (Demo Location)</p>
+            <p className="text-xs text-[#6B7280]">Gulshan Design Studio (Demo Concept Showcase), Dhaka, Bangladesh</p>
           </div>
         </div>
 

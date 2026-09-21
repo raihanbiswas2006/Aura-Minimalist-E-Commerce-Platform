@@ -4,6 +4,8 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { CartItem, CartState } from "@/types";
 import { SEEDED_COUPONS } from "@/data/coupons";
+import { FREE_SHIPPING_THRESHOLD, DEFAULT_STANDARD_SHIPPING_FEE } from "@/lib/constants";
+import { formatPrice } from "@/lib/utils";
 
 interface CartStore extends CartState {
   isDrawerOpen: boolean;
@@ -19,8 +21,7 @@ interface CartStore extends CartState {
   totalItemCount: () => number;
 }
 
-const FREE_SHIPPING_THRESHOLD = 150.0;
-const STANDARD_SHIPPING_FEE = 15.0;
+const STANDARD_SHIPPING_FEE = DEFAULT_STANDARD_SHIPPING_FEE;
 
 function calculateTotals(items: CartItem[], couponCode?: string): {
   subtotal: number;
@@ -140,7 +141,7 @@ export const useCartStore = create<CartStore>()(
         }
 
         if (found.minOrderAmount && subtotal < found.minOrderAmount) {
-          const err = `Coupon "${trimmed}" requires a minimum order of $${found.minOrderAmount.toFixed(2)}.`;
+          const err = `Coupon "${trimmed}" requires a minimum order of ${formatPrice(found.minOrderAmount)}.`;
           set({ couponError: err });
           return { success: false, message: err };
         }

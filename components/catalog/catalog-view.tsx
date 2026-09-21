@@ -9,6 +9,7 @@ import { Sheet } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { getProducts } from "@/lib/api/products";
 import { CATEGORIES } from "@/data/categories";
+import { formatPrice } from "@/lib/utils";
 
 interface CatalogViewProps {
   initialCategory?: string;
@@ -125,8 +126,8 @@ export function CatalogView({
   // Active filter chips
   const activeChips: { label: string; onRemove: () => void }[] = [];
   if (filters.minPrice !== undefined || filters.maxPrice !== undefined) {
-    const minStr = filters.minPrice !== undefined ? `$${filters.minPrice}` : "$0";
-    const maxStr = filters.maxPrice !== undefined ? `$${filters.maxPrice}` : "+";
+    const minStr = filters.minPrice !== undefined ? formatPrice(filters.minPrice) : formatPrice(0);
+    const maxStr = filters.maxPrice !== undefined ? formatPrice(filters.maxPrice) : "+";
     activeChips.push({
       label: `Price: ${minStr} – ${maxStr}`,
       onRemove: () => updateUrlParams({ minPrice: undefined, maxPrice: undefined }),

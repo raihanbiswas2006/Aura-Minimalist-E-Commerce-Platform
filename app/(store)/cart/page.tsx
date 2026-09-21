@@ -184,7 +184,7 @@ export default function CartPage() {
               >
                 <span>← Continue Shopping</span>
               </Link>
-              <span>Prices in USD. Taxes calculated at checkout.</span>
+              <span>Prices in BDT (৳). Delivery calculated at checkout.</span>
             </div>
           </div>
 

@@ -122,11 +122,27 @@ export default function OrderConfirmationPage({ params }: OrderConfirmationProps
             <div className="text-[#14171A] space-y-1">
               <p>
                 <strong>Method:</strong>{" "}
-                {order?.paymentMethod === "cod" ? "Cash on Delivery (Demo)" : "Simulated Credit Card"}
+                {order?.paymentMethod === "cod"
+                  ? "Cash on Delivery (Demo COD)"
+                  : order?.paymentMethod === "bkash"
+                  ? "bKash (Demo MFS Simulation)"
+                  : order?.paymentMethod === "nagad"
+                  ? "Nagad (Demo MFS Simulation)"
+                  : order?.paymentMethod === "rocket"
+                  ? "Rocket (Demo MFS Simulation)"
+                  : "Card Payment (Demo Simulation)"}
               </p>
               <p>
                 <strong>Logistics:</strong>{" "}
-                {order?.shippingMethod === "express" ? "Express Courier (1-2 Days)" : "Standard Delivery (3-5 Days)"}
+                {order?.shippingMethod === "inside-dhaka"
+                  ? "Inside Dhaka Delivery (1–3 Days)"
+                  : order?.shippingMethod === "outside-dhaka"
+                  ? "Outside Dhaka Regional (3–5 Days)"
+                  : order?.shippingMethod === "nationwide"
+                  ? "Nationwide Delivery (4–7 Days)"
+                  : order?.shippingMethod === "express"
+                  ? "Express Courier (1–2 Days)"
+                  : "Standard Delivery (1–3 Days)"}
               </p>
               <p>
                 <strong>Order Placed:</strong> {order ? formatDate(order.createdAt) : "Today"}
@@ -146,7 +162,7 @@ export default function OrderConfirmationPage({ params }: OrderConfirmationProps
           </h3>
 
           <div className="divide-y divide-[#F3F4F6]">
-            {(order?.items || []).length > 0 ? (
+            {order?.items && order.items.length > 0 ? (
               order?.items.map((item) => (
                 <div key={item.id} className="py-4 flex items-center justify-between gap-4">
                   <div className="flex items-center gap-4">
@@ -172,8 +188,8 @@ export default function OrderConfirmationPage({ params }: OrderConfirmationProps
               ))
             ) : (
               <div className="py-4 flex items-center justify-between text-xs text-[#6B7280]">
-                <span>Sample Curated Item</span>
-                <span>$245.00</span>
+                <span>Sample Curated Piece</span>
+                <span>{formatPrice(34900)}</span>
               </div>
             )}
           </div>
@@ -183,7 +199,7 @@ export default function OrderConfirmationPage({ params }: OrderConfirmationProps
         <div className="pt-6 border-t border-[#E4E7EB] space-y-2 text-xs">
           <div className="flex justify-between text-[#6B7280]">
             <span>Subtotal</span>
-            <span>{formatPrice(order?.pricing.subtotal || 245.0)}</span>
+            <span>{formatPrice(order?.pricing.subtotal || 34900)}</span>
           </div>
           {order?.pricing.discount ? (
             <div className="flex justify-between text-[#18804E] font-medium">
@@ -200,7 +216,7 @@ export default function OrderConfirmationPage({ params }: OrderConfirmationProps
           <div className="flex justify-between text-base font-bold text-[#14171A] pt-3 border-t border-[#E4E7EB]">
             <span>Total Paid (Simulated)</span>
             <span className="text-[#1F4E43] text-lg font-serif">
-              {formatPrice(order?.pricing.total || 245.0)}
+              {formatPrice(order?.pricing.total || 34900)}
             </span>
           </div>
         </div>

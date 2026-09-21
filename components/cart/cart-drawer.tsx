@@ -114,7 +114,7 @@ export function CartDrawer() {
                     type="text"
                     value={inputCoupon}
                     onChange={(e) => setInputCoupon(e.target.value)}
-                    placeholder="Promo code (SAVE10, FREESHIP)"
+                    placeholder="Promo code (SAVE10, FREESHIP, WELCOME20)"
                     className="flex-1 h-9 px-3 text-xs border border-[#E4E7EB] rounded-md focus-visible:outline-2 focus-visible:outline-[#1F4E43] uppercase"
                   />
                   <Button type="submit" variant="secondary" size="sm">

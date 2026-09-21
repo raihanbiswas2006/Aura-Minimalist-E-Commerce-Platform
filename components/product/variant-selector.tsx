@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Plus, Minus, ShoppingBag, Zap, Shield, RotateCcw, Truck, Check, Bell, Loader2 } from "lucide-react";
 import { Product, ProductVariant } from "@/types";
 import { formatPrice } from "@/lib/utils";
+import { FREE_SHIPPING_THRESHOLD } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/store/cart-store";
 import { trackEvent } from "@/lib/analytics";
@@ -143,7 +144,7 @@ export function VariantSelector({ product }: VariantSelectorProps) {
           )}
         </div>
         <p className="text-xs text-[#6B7280]">
-          Taxes calculated at checkout • Complimentary delivery on orders over $150
+          Delivery calculated at checkout • Complimentary delivery on orders over {formatPrice(FREE_SHIPPING_THRESHOLD)}
         </p>
       </div>
 
@@ -157,8 +158,8 @@ export function VariantSelector({ product }: VariantSelectorProps) {
             {selectedVariant.priceModifier !== 0 && (
               <span className="text-[#1F4E43] font-medium">
                 {selectedVariant.priceModifier > 0
-                  ? `+$${selectedVariant.priceModifier}`
-                  : `-$${Math.abs(selectedVariant.priceModifier)}`}
+                  ? `+${formatPrice(selectedVariant.priceModifier)}`
+                  : `-${formatPrice(Math.abs(selectedVariant.priceModifier))}`}
               </span>
             )}
           </div>

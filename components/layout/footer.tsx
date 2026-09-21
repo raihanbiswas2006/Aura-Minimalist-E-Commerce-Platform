@@ -178,15 +178,15 @@ export function Footer() {
             </Link>
           </div>
 
-          {/* SVG Payment Trust Indicators */}
+          {/* Payment Trust Indicators (Demo Simulation) */}
           <div className="flex items-center gap-2 text-[#9CA3AF]">
             <span className="text-[10px] uppercase font-semibold">Simulated Sandbox:</span>
             <div className="flex items-center gap-1.5 opacity-80">
-              <span className="px-1.5 py-0.5 rounded bg-white/10 text-[10px] font-mono text-white">VISA</span>
-              <span className="px-1.5 py-0.5 rounded bg-white/10 text-[10px] font-mono text-white">MC</span>
-              <span className="px-1.5 py-0.5 rounded bg-white/10 text-[10px] font-mono text-white">AMEX</span>
-              <span className="px-1.5 py-0.5 rounded bg-white/10 text-[10px] font-mono text-white">APPLE PAY</span>
-              <span className="px-1.5 py-0.5 rounded bg-white/10 text-[10px] font-mono text-white">PAYPAL</span>
+              <span className="px-1.5 py-0.5 rounded bg-white/10 text-[10px] font-mono text-white">COD</span>
+              <span className="px-1.5 py-0.5 rounded bg-white/10 text-[10px] font-mono text-white">bKash</span>
+              <span className="px-1.5 py-0.5 rounded bg-white/10 text-[10px] font-mono text-white">Nagad</span>
+              <span className="px-1.5 py-0.5 rounded bg-white/10 text-[10px] font-mono text-white">Rocket</span>
+              <span className="px-1.5 py-0.5 rounded bg-white/10 text-[10px] font-mono text-white">Cards</span>
             </div>
           </div>
         </div>

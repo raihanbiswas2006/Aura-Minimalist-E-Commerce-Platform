@@ -5,11 +5,18 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export function formatCurrency(price: number): string {
+  if (price === undefined || price === null || isNaN(price)) {
+    return "৳0";
+  }
+  const isNegative = price < 0;
+  const absValue = Math.round(Math.abs(price));
+  const formatted = new Intl.NumberFormat("en-BD").format(absValue);
+  return isNegative ? `-৳${formatted}` : `৳${formatted}`;
+}
+
 export function formatPrice(price: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(price);
+  return formatCurrency(price);
 }
 
 export function formatDate(dateString: string): string {

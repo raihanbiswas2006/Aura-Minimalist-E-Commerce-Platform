@@ -75,15 +75,27 @@ export interface Address {
   fullName: string;
   email: string;
   phone: string;
+  division: string; // Bangladesh Division
+  district: string; // District / Zila
+  area: string; // Area / Upazila / Thana
   streetAddress: string;
   apartment?: string;
-  city: string;
-  state: string;
+  city?: string; // Fallback / district alias
+  state?: string; // Fallback / division alias
   postalCode: string;
   country: string;
 }
 
 export type OrderStatus = 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+
+export type ShippingMethod =
+  | 'inside-dhaka'
+  | 'outside-dhaka'
+  | 'nationwide'
+  | 'standard'
+  | 'express';
+
+export type PaymentMethod = 'cod' | 'bkash' | 'nagad' | 'rocket' | 'card';
 
 export interface Order {
   id: string;
@@ -91,8 +103,8 @@ export interface Order {
   createdAt: string;
   items: CartItem[];
   shippingAddress: Address;
-  shippingMethod: 'standard' | 'express';
-  paymentMethod: 'card' | 'cod';
+  shippingMethod: ShippingMethod;
+  paymentMethod: PaymentMethod;
   pricing: {
     subtotal: number;
     discount: number;
@@ -121,7 +133,7 @@ export interface Review {
 export interface Coupon {
   code: string;
   discountType: 'percentage' | 'fixed' | 'shipping';
-  discountValue: number; // e.g., 10 for 10%, 20 for $20 flat
+  discountValue: number; // e.g., 10 for 10%, 200 for ৳200 flat
   minOrderAmount?: number;
   description: string;
 }

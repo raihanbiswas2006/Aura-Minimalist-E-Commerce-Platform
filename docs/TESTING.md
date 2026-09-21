@@ -55,20 +55,22 @@ node scripts/qa-audit.mjs
 ---
 
 ### Protocol 4: Free Shipping Meter Calculation (AC-02)
-1. **Action:** Add an item worth $65.00 to the bag (subtotal: $65.00).
-2. **Result:** Free shipping meter indicates $85.00 remaining; shipping fee displays $15.00.
-3. **Action:** Increment item quantity or add another piece to raise subtotal above $150.00 (e.g., $185.00).
-4. **Result:** Shipping fee updates to "$0.00 (FREE)" and progress meter fills to 100% with confirmation &ldquo;You have qualified for Free Delivery&rdquo;.
+1. **Action:** Add an item worth ৳3,500 to the bag (subtotal: ৳3,500).
+2. **Result:** Free shipping meter indicates ৳1,500 remaining; shipping fee displays ৳60 (Inside Dhaka tier).
+3. **Action:** Increment item quantity or add another piece to raise subtotal above ৳5,000 (e.g., ৳7,000).
+4. **Result:** Shipping fee updates to "৳0 (FREE)" and progress meter fills to 100% with confirmation &ldquo;You have qualified for Free Delivery&rdquo;.
 
 ---
 
 ### Protocol 5: Coupon Engine Evaluation
-1. **Action:** Enter code `SAVE10` on an order < $50.00.
-2. **Result:** Clear error message: &ldquo;Coupon 'SAVE10' requires a minimum order of $50.00&rdquo;.
-3. **Action:** On an order ≥ $50.00, apply `SAVE10`.
+1. **Action:** Enter code `SAVE10` on an order < ৳2,500.
+2. **Result:** Clear error message: &ldquo;Coupon 'SAVE10' requires a minimum order of ৳2,500&rdquo;.
+3. **Action:** On an order ≥ ৳2,500, apply `SAVE10`.
 4. **Result:** 10% is deducted from subtotal and coupon pill appears with single-click removal button.
 5. **Action:** Test code `FREESHIP`.
-6. **Result:** Deducts shipping fee to $0.00.
+6. **Result:** Deducts shipping fee to ৳0.
+7. **Action:** Test code `WELCOME20` on order ≥ ৳3,000.
+8. **Result:** Deducts flat ৳200 discount.
 
 ---
 
@@ -85,11 +87,11 @@ node scripts/qa-audit.mjs
 ### Protocol 7: Pricing Model Consistency Verification
 1. **Action:** Inspect a discounted product (e.g., "Nordic Lounge Chair") on Homepage, PLP, PDP, Wishlist, Cart, and Admin.
 2. **Result:**
-   - Homepage & PLP: Formatted active price `$349.00`, strikethrough compare-at price `$380.00`, discount badge `-8%`.
-   - PDP (`/p/nordic-lounge-chair`): Active price `$349.00`, strikethrough compare-at price `$380.00`, and `-8% Sale` pill.
-   - Wishlist (`/wishlist`): Active price `$349.00` and strikethrough compare-at price `$380.00`.
-   - Cart & Checkout: Unit price accurately reflects `$349.00`.
-   - Admin (`/admin`): Product summary clearly displays `Compare-at / Original: $380.00 • Sale Price: $349.00` and variant-specific active pricing.
+   - Homepage & PLP: Formatted active price `৳34,900`, strikethrough compare-at price `৳38,500`, discount badge `-9%`.
+   - PDP (`/p/nordic-lounge-chair`): Active price `৳34,900`, strikethrough compare-at price `৳38,500`, and `-9% Sale` pill.
+   - Wishlist (`/wishlist`): Active price `৳34,900` and strikethrough compare-at price `৳38,500`.
+   - Cart & Checkout: Unit price accurately reflects `৳34,900`.
+   - Admin (`/admin`): Product summary clearly displays `Compare-at / Original: ৳38,500 • Sale Price: ৳34,900` and variant-specific active pricing formatted with `formatPrice`.
 
 ---
 
@@ -107,11 +109,11 @@ node scripts/qa-audit.mjs
 ### Protocol 9: Content & Disclaimers Audit
 1. **Action:** Inspect Footer, About, Shipping, Returns, and Contact pages.
 2. **Result:**
-   - Footer: Displays "Designed following WCAG 2.2 AA guidelines (Demo)".
-   - Shipping: Displays demo environment disclaimer and simulated ground delivery tiers.
+   - Footer: Displays "Designed following WCAG 2.2 AA guidelines (Demo)" and Bangladesh simulated payment badges (COD, bKash, Nagad, Rocket, Cards).
+   - Shipping: Displays demo environment disclaimer and Bangladesh delivery tiers (Inside Dhaka ৳60, Outside Dhaka ৳120, Nationwide ৳150).
    - Returns: Clearly frames terms as simulated customer care policies.
    - About: Displays portfolio concept banner and conceptual sustainability standards.
-   - Contact: Clearly labels email, telephone, and showroom address as demonstration placeholders.
+   - Contact: Clearly labels email, telephone (`+880 9612-000000`), and showroom address (`Gulshan Design Studio`) as demonstration placeholders.
    - Reviews: Labeled as sample reviews with "Verified Buyer (Demo)" badges.
 
 ---
@@ -144,4 +146,30 @@ node scripts/qa-audit.mjs
 8. **Automated Verification Script:**
    - Run `node scripts/verify-ux.mjs`.
    - Result: 21/21 static and contract assertions pass with zero failures.
+
+---
+
+### Protocol 11: Bangladesh Localization, Address Validation & Payment Simulation Verification
+1. **Action:** Add any item to cart and navigate to `/checkout`.
+2. **Address Fields & Validation:**
+   - Verify presence of Full Name, Mobile Number, Email Address, Division (dropdown with 8 BD divisions), District, Area / Upazila / Thana, Detailed Address, and Postal Code.
+   - Enter invalid phone number (e.g. `12345` or `0212345678`) and blur field.
+   - Result: Accessible inline validation error: "Please enter a valid Bangladesh mobile number (e.g., 017XXXXXXXX or +88017XXXXXXXX)".
+   - Enter valid number `01711000001` or `+8801819000002`. Error clears immediately.
+3. **Shipping Tier Selection:**
+   - In Stage 2, select "Inside Dhaka" (৳60, 1–3 working days). Subtotal + ৳60 matches order summary.
+   - Select "Outside Dhaka" (৳120, 3–5 working days). Summary updates in real-time.
+   - Select "Nationwide Delivery" (৳150, 4–7 working days). Summary updates in real-time.
+   - If cart total is ≥ ৳5,000, shipping displays "৳0 (Complimentary)".
+4. **Payment Simulation Flow:**
+   - In Stage 3, verify 4 primary simulated Bangladesh payment options: Cash on Delivery (COD), bKash (Demo Simulation), Nagad (Demo Simulation), Rocket (Demo Simulation), and auxiliary Demo Card.
+   - Selecting "Cash on Delivery" displays notice that total is payable upon physical handover.
+   - Selecting "bKash Demo" renders sandbox wallet number prompt.
+   - Complete checkout with COD or bKash Demo.
+5. **Confirmation & Order Storage:**
+   - Navigates to `/order/[id]/confirmation`.
+   - Order total, item prices, and delivery fee are strictly in BDT (`৳`).
+   - Payment method clearly identified (e.g. "Cash on Delivery (Demo)" or "bKash (Demo Simulation)").
+   - Disclaimer confirms no real financial transaction took place.
+
 
