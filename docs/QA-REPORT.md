@@ -197,4 +197,50 @@ The platform underwent a complete localization pass converting generic USD-based
 - **UX & Micro-Interaction Static & Contract Verification (`verify-ux.mjs`):** 21/21 tests passed (100%).
 - **Production Build (`npm run build`):** Compiled successfully with 0 errors.
 
+---
+
+## 7. Authentication, Account & Server-Side Purchase Protection Pass
+
+**Pass Identifier:** `AUTH-SEC-2026-V1`  
+**Completion Date:** September 23, 2026  
+**Status:** 100% Complete & Verified  
+
+### 7.1 Architecture & Implementation Summary
+1. **NextAuth (Auth.js v5) Authentication Engine:**
+   - Deployed `next-auth@beta` (`v5.0.0-beta.32`) with JWT session strategy and secure, encrypted HttpOnly cookie management.
+   - Dual Authentication Providers:
+     - **Credentials Provider:** Email + Password authentication with bcrypt cost factor 12 hashing and verification (`lib/security/validation.ts`, `auth.ts`).
+     - **Google OAuth / OIDC Provider:** Configured for minimum identity scopes (`openid`, `email`, `profile`) without access to any Google workspace resources.
+2. **Server-Side Persistent Data Layer:**
+   - Atomic, file-backed persistent repository (`lib/db/index.ts` writing to `data/db.json`) supporting User, Account, Session, and Order schemas.
+   - Pre-seeded with Bangladesh customer and administrator personas:
+     - `arif@demo.aura` (Arif Rahman, Customer)
+     - `nusrat@demo.aura` (Nusrat Jahan, Customer)
+     - `admin@demo.aura` (Operations Admin, Role: `ADMIN`)
+     - Default demo password: `AuraLiving2026!` (pre-hashed with bcrypt).
+3. **Server-Side Purchase Protection & Zero-Trust Validation:**
+   - Protected API route `POST /api/orders` enforces server-side session checks, rejecting unauthenticated requests with `401 Unauthorized`.
+   - Ignores client-provided pricing, discounts, shipping fees, or user IDs. All values are recalculated strictly from authoritative catalog items and coupon rules.
+   - Validates live variant stock before creating orders.
+4. **Horizontal Order Ownership Protection (Anti-IDOR):**
+   - Implemented strict ownership checks in `GET /api/orders` and `GET /api/orders/[id]`.
+   - Requests from User A targeting User B's order ID are blocked with `404 Not Found` / `403 Forbidden`.
+5. **Checkout Authentication Gate & Cart Preservation:**
+   - Single-page `/checkout` detects unauthenticated users and presents a non-disruptive Authentication Gate modal.
+   - Guest cart items and quantities in `aura_cart_state` remain completely intact throughout the login/registration redirect cycle (`callbackUrl=/checkout`).
+6. **Role-Based Access Control (RBAC):**
+   - Default role for self-registered users is strictly `CUSTOMER`.
+   - Privilege escalation via client payload (`role: "ADMIN"`) is filtered out by Zod schema and ignored by the server.
+   - The `/admin` portal performs server-side role validation against `session.user.role === "ADMIN"`.
+7. **HTTP Security Headers & Environment Isolation:**
+   - Configured Content-Security-Policy (CSP), X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Strict-Transport-Security (HSTS), and Permissions-Policy in `next.config.ts`.
+   - Zero client bundle exposure of server secrets (`AUTH_SECRET`, `GOOGLE_CLIENT_SECRET`).
+
+### 7.2 Automated Test & Verification Results
+- **TypeScript Strict Compilation (`tsc --noEmit`):** 0 errors.
+- **UX & Micro-Interaction Static & Contract Verification (`verify-ux.mjs`):** 21/21 tests passed (100%).
+- **Security & Authentication Test Suite (`test-auth-security.mjs`):** 43/43 tests passed (100%).
+- **Production Build (`npm run build`):** 23/23 routes compiled successfully.
+
+
 

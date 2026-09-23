@@ -1,42 +1,49 @@
 # Architecture Specification: Aura Minimalist E-Commerce Platform
 
-## 1. System Overview
+## 1. System Overview & Authentication Architecture
 
 ```
-+------------------------------------------------------------------------+
-|                            USER BROWSER                                |
-|  - Next.js Client Components (React 19)                                |
-|  - Local-First Client State (Zustand: Cart, Wishlist, Auth, Orders)    |
-|  - Form Management & WCAG 2.2 AA Inline Validation                     |
-+------------------------------------------------------------------------+
++-----------------------------------------------------------------------------------+
+|                                   USER BROWSER                                    |
+|  - Next.js Client Components (React 19)                                           |
+|  - Auth.js Session Consumer (`useSession`) with HttpOnly Secure Cookies           |
+|  - Local-First Client State (Zustand: Cart, Wishlist)                             |
+|  - Checkout Auth Gate & Distraction-Free Accordion (BD Localization)               |
++-----------------------------------------------------------------------------------+
                                     │
                                     ▼
-+------------------------------------------------------------------------+
-|                     NEXT.JS APP ROUTER ENGINE                          |
-|  - React Server Components (RSC: Catalog, Metadata, SEO)               |
-|  - Dynamic Route Handlers & Turbopack Compilation                      |
-|  - Image Optimization Pipeline (`next/image`, AVIF/WebP)               |
-+------------------------------------------------------------------------+
++-----------------------------------------------------------------------------------+
+|                        NEXT.JS APP ROUTER & API LAYER                             |
+|  - Route Handlers: `/api/auth/[...nextauth]`, `/api/auth/register`, `/api/orders` |
+|  - Server-Side Purchase Protection (Stock availability, zero-trust price recalculation)|
+|  - Strict Horizontal Order Ownership Authorization                                |
+|  - Security Headers (CSP, X-Frame-Options, X-Content-Type-Options, HSTS)          |
++-----------------------------------------------------------------------------------+
                                     │
-                                    ▼
-+------------------------------------------------------------------------+
-|                     MOCK SEED & SERVICE LAYER                          |
-|  - Static Relational TypeScript Mock Data (`/data/*`)                  |
-|  - Data Access Object (DAO) Abstraction Layer (`/lib/api/*`)           |
-|  - LocalStorage Persistence Adapter (`/store/*`)                       |
-+------------------------------------------------------------------------+
+                  ┌─────────────────┴─────────────────┐
+                  ▼                                   ▼
++------------------------------------+   +------------------------------------+
+|       AUTH.JS PROVIDERS            |   |       PERSISTENT REPOSITORY        |
+|  - Credentials (`bcrypt` cost 12)  |   |  - Server Database (`lib/db/*`)    |
+|  - Google OAuth (OpenID Connect)   |   |  - Atomic JSON File (`data/db.json`)|
+|  - Scopes: `openid email profile`  |   |  - Pluggable `DATABASE_URL`        |
++------------------------------------+   +------------------------------------+
 ```
+
+---
 
 ## 2. State Management Taxonomy
 
-| State Type | Scope | Technology | Example Entities | Storage Key |
+| State Type | Scope | Technology | Example Entities | Storage Key / Provider |
 | --- | --- | --- | --- | --- |
-| **Server State** | Server / Build | Next.js Server Components | Product catalogs, category definitions, SEO metadata | In-memory |
-| **URL State** | Browser Address | `next/navigation` (`useSearchParams`) | Active search queries (`?q=`), applied filters (`?color=`), sort orders | URL |
-| **Cart Global** | Persistent Client | Zustand (`persist` middleware) | Line items, coupon codes, shipping threshold meter | `aura_cart_state` |
-| **Wishlist Global** | Persistent Client | Zustand (`persist` middleware) | Saved product IDs array, reactive badges | `aura_wishlist_items` |
-| **Auth Global** | Persistent Client | Zustand (`persist` middleware) | Demo active persona (Arif, Nusrat, Guest), saved addresses | `aura_auth_state` |
-| **Orders Global** | Persistent Client | Zustand (`persist` middleware) | Generated order receipts, tracking numbers, status flow | `aura_order_history` |
+| **Server State** | Server / Build | Next.js Server Components | Product catalogs, category definitions, SEO metadata | In-memory catalog |
+| **Auth Session** | Server-Authoritative | Auth.js v5 (`next-auth@beta`) | User ID, email, verified name, role (`CUSTOMER` / `ADMIN`) | HttpOnly JWT session cookie |
+| **URL State** | Browser Address | `next/navigation` (`useSearchParams`) | Active search queries (`?q=`), applied filters (`?color=`), `callbackUrl` | Browser URL |
+| **Cart Global** | Persistent Client | Zustand (`persist` middleware) | Line items, coupon codes, shipping threshold meter | `aura_cart_state` (LocalStorage) |
+| **Wishlist Global** | Persistent Client | Zustand (`persist` middleware) | Saved product IDs array, reactive badges | `aura_wishlist_items` (LocalStorage) |
+| **Orders Store** | Server-Authoritative | Server DB (`lib/db/index.ts`) & Zustand mirror | Verified orders, tracking numbers, itemized receipts | Server `data/db.json` + `aura_order_history` |
+
+---
 
 ## 3. Directory Layout
 
@@ -51,8 +58,10 @@ aura-storefront-web/
 │   │   ├── search/page.tsx           # Search Listing View & Empty Recovery
 │   │   ├── cart/page.tsx             # Standalone Full Cart View
 │   │   ├── wishlist/page.tsx         # User Wishlist View
-│   │   ├── account/page.tsx          # Simulated Customer Portal
-│   │   ├── account/orders/page.tsx   # Historical Orders & Tracking
+│   │   ├── login/page.tsx            # Dedicated Customer Sign-In (Credentials + Google)
+│   │   ├── register/page.tsx         # Dedicated Customer Registration
+│   │   ├── account/page.tsx          # Customer Account & Security Portal
+│   │   ├── account/orders/page.tsx   # Verified Order History (User-Isolated)
 │   │   ├── order/[id]/confirmation/  # Order Receipt View (Print-optimized)
 │   │   ├── about/page.tsx            # Brand Manifesto
 │   │   ├── contact/page.tsx          # Customer Care Inquiries
@@ -62,15 +71,21 @@ aura-storefront-web/
 │   │   └── terms/page.tsx            # Terms of Service
 │   ├── (checkout)/
 │   │   ├── layout.tsx                # Secure distraction-free checkout layout
-│   │   └── checkout/page.tsx         # 3-Stage Accordion Guest Checkout Flow (BD Address & MFS)
+│   │   └── checkout/page.tsx         # 3-Stage Accordion Checkout with Authentication Gate
 │   ├── (admin)/
 │   │   ├── layout.tsx                # Admin Hub layout
-│   │   └── admin/page.tsx            # Live inventory & order monitor (BDT)
+│   │   └── admin/page.tsx            # Live inventory & order monitor (ADMIN Role Guarded)
+│   ├── api/
+│   │   ├── auth/[...nextauth]/       # Auth.js route handlers (GET, POST)
+│   │   ├── auth/register/            # Customer registration API (bcrypt hashing)
+│   │   └── orders/                   # Server-authoritative order creation and lookup
 │   ├── not-found.tsx                 # Standardized 404 Recovery View
 │   ├── error.tsx                     # Global Error Boundary UI
 │   ├── robots.ts                     # Search Engine Robots directives
 │   └── sitemap.ts                    # Dynamic XML Sitemap generator
+├── auth.ts                           # Auth.js NextAuth configuration
 ├── components/
+│   ├── auth/                         # SessionProvider client wrapper
 │   ├── ui/                           # Base Primitives (Button, Badge, Input, Sheet, Dialog, Accordion, Skeleton)
 │   ├── layout/                       # Header, Footer, MobileNav, AnnouncementBar
 │   ├── catalog/                      # CatalogView, CatalogFilterSidebar
@@ -78,40 +93,74 @@ aura-storefront-web/
 │   ├── cart/                         # CartDrawer, CartLineItem, FreeShippingMeter
 │   └── review/                       # ReviewSection, RatingHistogram, ReviewSubmissionModal
 ├── data/                             # Seed Data (Products, Categories, Reviews, Coupons, Users in BDT)
+│   └── db.json                       # Atomic file-backed persistent database store
 ├── lib/
 │   ├── api/products.ts               # Data Access Layer & Typo-Tolerant Search
+│   ├── db/                           # Persistent Database DAO & Schema
+│   ├── security/                     # Zod validation schemas & sliding-window rate limiter
 │   ├── constants.ts                  # Centralized Bangladesh localization constants
 │   ├── utils.ts                      # Helpers, formatPrice (৳), ID generators
 │   └── analytics.ts                  # Client telemetry event pipeline
 ├── store/                            # Zustand stores (Cart, Wishlist, Auth, Orders)
-└── types/                            # TypeScript interfaces matching PRD Section 31 & BD Address/Order schemas
+└── types/                            # TypeScript interfaces & NextAuth augmentations
 ```
 
-## 4. Bangladesh Localization & Commerce Architecture
+---
 
-### 4.1 Centralized Constants (`lib/constants.ts`)
-- **Currency:** `CURRENCY_CODE = "BDT"`, `CURRENCY_SYMBOL = "৳"`.
-- **Free Shipping Threshold:** `FREE_SHIPPING_THRESHOLD = 5000` (৳5,000 threshold for complimentary shipping).
-- **Shipping Tiers:**
-  - `inside-dhaka`: ৳60 (1–3 working days)
-  - `outside-dhaka`: ৳120 (3–5 working days)
-  - `nationwide`: ৳150 (4–7 working days)
-- **BDT Price Range Presets:**
-  - Under ৳5,000
-  - ৳5,000 – ৳10,000
-  - ৳10,000 – ৳25,000
-  - ৳25,000 & Above
-- **Administrative Divisions:** Dhaka, Chattogram, Rajshahi, Khulna, Barishal, Sylhet, Rangpur, Mymensingh.
+## 4. Purchase Protection & Commerce Flow
 
-### 4.2 Presentation-Layer Currency Formatter (`lib/utils.ts`)
-- `formatPrice(amount: number): string` formats numeric currency amounts into BDT with the `৳` prefix and `en-BD` numeric grouping with zero decimal places (e.g., `৳1,250`, `৳34,900`).
-- Underlying calculation variables in Zustand cart store, checkout calculations, and order receipts operate on clean integers/floats without string concatenation bugs.
+```
+[Guest Visitor]
+      │
+      ├─► Browse Catalog & PLPs
+      ├─► View PDPs & Magnifier
+      ├─► Add to Shopping Bag (`aura_cart_state`)
+      └─► Proceed to Checkout (`/checkout`)
+            │
+            ▼
+      [Authentication Check]
+            │
+            ├─► If Authenticated: Pre-fill Saved Address & Proceed
+            │
+            └─► If Unauthenticated: Display Authentication Gate
+                  │
+                  ├─► Option A: Sign In (`/login?callbackUrl=/checkout`)
+                  ├─► Option B: Register (`/register?callbackUrl=/checkout`)
+                  └─► Option C: Continue with Google OAuth
+                        │
+                        ▼ (Cart Preserved Intact)
+                  Return to `/checkout`
+                        │
+                        ▼
+      [Submit Order]
+            │
+            ▼
+      [Server-Authoritative Validation: POST /api/orders]
+            ├─► 1. Authenticate Session (`auth()`) -> 401 if null
+            ├─► 2. Rate Limit Check
+            ├─► 3. Validate Payload Schema (Zod)
+            ├─► 4. Re-calculate Real Prices from Catalog (Zero Client Trust)
+            ├─► 5. Verify Variant Stock Availability (Reject Over-Purchasing)
+            ├─► 6. Re-calculate Coupon Discounts & Shipping Rules
+            ├─► 7. Atomically Deduct Stock
+            ├─► 8. Assign Order to `session.user.id` (Enforce Ownership)
+            └─► 9. Save Order to Database
+                        │
+                        ▼
+      [Redirect to Order Confirmation `/order/[id]/confirmation`]
+```
 
-### 4.3 Address & Validation Architecture
-- **Schema Fields:** `fullName`, `email`, `phone`, `division`, `district`, `area`, `address1`, `postalCode`.
-- **Mobile Validation:** Supports both local and international Bangladesh dial codes: `^(?:\+?880|0)?1[3-9]\d{8}$`.
-- **Keyboard Optimization:** `inputMode="tel"` on mobile number fields for native telephone dial pads.
+---
 
-### 4.4 Simulation Payment Architecture
-- **Methods:** Cash on Delivery (`cod`), bKash Demo (`bkash`), Nagad Demo (`nagad`), Rocket Demo (`rocket`), Demo Card (`card`).
-- **Sandbox Boundary:** Clear simulation notice banners and non-persisted test inputs; no live MFS APIs, webhook endpoints, or external merchant credentials.
+## 5. Security & Authorization Matrix
+
+| Resource | Public | Customer | Operations Admin |
+| --- | --- | --- | --- |
+| Homepage & Catalog (`/`, `/c/*`, `/p/*`) | Read | Read | Read |
+| Search & Autocomplete (`/search`) | Read | Read | Read |
+| Shopping Bag & Wishlist (`/cart`, `/wishlist`) | Read/Write | Read/Write | Read/Write |
+| Checkout Flow (`/checkout`) | Blocked (Gate) | Read/Write | Read/Write |
+| Create Order (`POST /api/orders`) | Denied (401) | Allowed | Allowed |
+| Order History (`GET /api/orders`) | Denied (401) | Own Orders Only | Own Orders Only |
+| Order Detail (`GET /api/orders/[id]`) | Denied (401) | Own Order (403 if not owner) | All Orders |
+| Administrative Hub (`/admin`) | Demo Simulation | Restricted Demo | Full Authorization |

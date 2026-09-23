@@ -15,7 +15,11 @@ import {
   Smartphone,
   ArrowRight,
   ShoppingBag,
+  AlertCircle,
+  Lock,
 } from "lucide-react";
+import { useSession, signIn } from "next-auth/react";
+import { Dialog } from "@/components/ui/dialog";
 import { useCartStore } from "@/store/cart-store";
 import { useOrderStore } from "@/store/order-store";
 import { useAuthStore } from "@/store/auth-store";
@@ -46,9 +50,13 @@ interface FormData {
 
 export default function CheckoutPage() {
   const router = useRouter();
+  const { data: session, status } = useSession();
   const { items, subtotal, discountAmount, couponCode, clearCart } = useCartStore();
   const { createOrder } = useOrderStore();
   const { user } = useAuthStore();
+
+  const [showAuthGate, setShowAuthGate] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
 
   // Accordion stages: 1 = Contact & Delivery, 2 = Shipping, 3 = Payment
   const [activeStage, setActiveStage] = useState<1 | 2 | 3>(1);
@@ -67,8 +75,8 @@ export default function CheckoutPage() {
 
   // Form Fields state
   const [formData, setFormData] = useState<FormData>({
-    email: user?.email || "",
-    fullName: user?.savedAddresses[0]?.fullName || user?.name || "",
+    email: session?.user?.email || user?.email || "",
+    fullName: session?.user?.name || user?.savedAddresses[0]?.fullName || user?.name || "",
     phone: user?.savedAddresses[0]?.phone || "",
     division: user?.savedAddresses[0]?.division || user?.savedAddresses[0]?.state || "Dhaka",
     district: user?.savedAddresses[0]?.district || user?.savedAddresses[0]?.city || "Dhaka",
@@ -93,9 +101,22 @@ export default function CheckoutPage() {
     postalCode: useRef<HTMLInputElement>(null),
   };
 
-  // Pre-fill if user logs in or switches persona
+  // Open Auth Gate if user is unauthenticated
   useEffect(() => {
-    if (user && user.savedAddresses[0]) {
+    if (status === "unauthenticated") {
+      setShowAuthGate(true);
+    }
+  }, [status]);
+
+  // Pre-fill if session loads or user switches persona
+  useEffect(() => {
+    if (session?.user) {
+      setFormData((prev) => ({
+        ...prev,
+        email: prev.email || session.user.email || "",
+        fullName: prev.fullName || session.user.name || "",
+      }));
+    } else if (user && user.savedAddresses[0]) {
       const addr = user.savedAddresses[0];
       setFormData((prev) => ({
         ...prev,
@@ -110,7 +131,7 @@ export default function CheckoutPage() {
         postalCode: addr.postalCode,
       }));
     }
-  }, [user]);
+  }, [session, user]);
 
   // Shipping Fee calculation
   const isFreeShipping = subtotal >= FREE_SHIPPING_THRESHOLD || couponCode === "FREESHIP";
@@ -173,8 +194,14 @@ export default function CheckoutPage() {
     setActiveStage(3);
   };
 
-  const handleCompleteOrder = () => {
+  const handleCompleteOrder = async () => {
+    if (status !== "authenticated" || !session?.user) {
+      setShowAuthGate(true);
+      return;
+    }
+
     setIsSubmitting(true);
+    setServerError(null);
 
     trackEvent("begin_checkout", {
       subtotal,
@@ -182,43 +209,69 @@ export default function CheckoutPage() {
       total: finalTotal,
     });
 
-    setTimeout(() => {
-      const order = createOrder({
-        items,
-        shippingAddress: {
-          fullName: formData.fullName,
-          email: formData.email,
-          phone: formData.phone,
-          division: formData.division,
-          district: formData.district,
-          area: formData.area,
-          streetAddress: formData.streetAddress,
-          apartment: formData.apartment,
-          city: formData.district,
-          state: formData.division,
-          postalCode: formData.postalCode,
-          country: "Bangladesh",
-        },
-        shippingMethod,
-        paymentMethod,
-        pricing: {
-          subtotal,
-          discount: discountAmount,
-          shipping: activeShippingFee,
-          tax: 0.0,
-          total: finalTotal,
-        },
+    try {
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: items.map((i) => ({
+            productId: i.productId,
+            variantId: i.variantId,
+            quantity: i.quantity,
+          })),
+          shippingAddress: {
+            fullName: formData.fullName,
+            email: formData.email,
+            phone: formData.phone,
+            division: formData.division,
+            district: formData.district,
+            area: formData.area,
+            streetAddress: formData.streetAddress,
+            apartment: formData.apartment || undefined,
+            postalCode: formData.postalCode,
+            country: "Bangladesh",
+          },
+          shippingMethod,
+          paymentMethod,
+          couponCode: couponCode || undefined,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        if (res.status === 401) {
+          setShowAuthGate(true);
+        } else {
+          setServerError(data.error || "Order validation failed. Please review your selections.");
+        }
+        setIsSubmitting(false);
+        return;
+      }
+
+      const confirmedOrder = data.order;
+
+      // Keep client-side cache in sync for instant receipt rendering
+      createOrder({
+        items: confirmedOrder.items,
+        shippingAddress: confirmedOrder.shippingAddress,
+        shippingMethod: confirmedOrder.shippingMethod,
+        paymentMethod: confirmedOrder.paymentMethod,
+        pricing: confirmedOrder.pricing,
       });
 
       trackEvent("purchase", {
-        orderId: order.id,
-        total: finalTotal,
-        itemCount: items.length,
+        orderId: confirmedOrder.id,
+        total: confirmedOrder.pricing.total,
+        itemCount: confirmedOrder.items.length,
       });
 
       clearCart();
-      router.push(`/order/${order.id}/confirmation`);
-    }, 1000);
+      router.push(`/order/${confirmedOrder.id}/confirmation`);
+    } catch {
+      setServerError("A network error occurred while submitting your order. Please check your connection and try again.");
+      setIsSubmitting(false);
+    }
   };
 
   if (items.length === 0) {
@@ -242,6 +295,35 @@ export default function CheckoutPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14">
+      {/* Unauthenticated Security Notice Banner */}
+      {status === "unauthenticated" && (
+        <div className="mb-6 p-4 rounded-xl bg-[#1F4E43]/5 border border-[#1F4E43]/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-[#1F4E43]">
+          <div className="flex items-center gap-2.5">
+            <Lock className="w-4 h-4 shrink-0" />
+            <p>
+              <strong>Purchase Protection Active:</strong> An authenticated account is required to finalize order placement.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setShowAuthGate(true)}
+              className="px-3 py-1.5 bg-[#1F4E43] text-white rounded-md font-semibold hover:bg-[#183E35] transition-colors cursor-pointer"
+            >
+              Sign In / Register
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Server Error Alert Banner */}
+      {serverError && (
+        <div className="mb-6 p-4 rounded-xl bg-[#C2222E]/10 border border-[#C2222E]/20 flex items-start gap-2.5 text-xs text-[#C2222E]">
+          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+          <p className="font-medium">{serverError}</p>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
         {/* Left 7 Columns: 3-Stage Accordion Flow */}
         <div className="lg:col-span-7 space-y-6">
@@ -879,6 +961,78 @@ export default function CheckoutPage() {
           </div>
         </div>
       </div>
+
+      {/* Authentication Required / Checkout Gate Dialog */}
+      <Dialog
+        isOpen={showAuthGate}
+        onClose={() => setShowAuthGate(false)}
+        title="Authentication Required"
+        description="Aura Living Purchase Protection"
+      >
+        <div className="space-y-4 text-xs text-[#6B7280]">
+          <div className="p-3.5 rounded-xl bg-[#1F4E43]/5 border border-[#1F4E43]/20 flex items-start gap-2.5 text-xs text-[#1F4E43]">
+            <ShieldCheck className="w-4 h-4 shrink-0 mt-0.5" />
+            <p>
+              Please sign in or create an account to finalize your purchase. Your curated bag items ({items.reduce((acc, i) => acc + i.quantity, 0)} items) are safely preserved.
+            </p>
+          </div>
+
+          <div className="space-y-2 pt-2">
+            <Link
+              href="/login?callbackUrl=/checkout"
+              className="w-full flex items-center justify-center gap-2 h-11 bg-[#1F4E43] text-white hover:bg-[#183E35] rounded-md font-semibold transition-colors"
+            >
+              <span>Sign In to Existing Account</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+
+            <Link
+              href="/register?callbackUrl=/checkout"
+              className="w-full flex items-center justify-center gap-2 h-11 bg-white border border-[#E4E7EB] hover:border-[#1F4E43] text-[#14171A] rounded-md font-semibold transition-colors"
+            >
+              <span>Create New Account</span>
+            </Link>
+
+            <Button
+              type="button"
+              variant="outline"
+              size="md"
+              onClick={() => signIn("google", { callbackUrl: "/checkout" })}
+              className="w-full flex items-center justify-center gap-2 text-xs font-semibold text-[#14171A] hover:bg-[#FAF9F6] border-[#E4E7EB]"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24">
+                <path
+                  fill="#4285F4"
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                />
+                <path
+                  fill="#EA4335"
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                />
+              </svg>
+              <span>Continue with Google</span>
+            </Button>
+          </div>
+
+          <div className="pt-2 text-center">
+            <button
+              type="button"
+              onClick={() => router.push("/cart")}
+              className="text-xs text-[#6B7280] hover:underline cursor-pointer"
+            >
+              Return to Shopping Bag
+            </button>
+          </div>
+        </div>
+      </Dialog>
     </div>
   );
 }

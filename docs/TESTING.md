@@ -172,4 +172,74 @@ node scripts/qa-audit.mjs
    - Payment method clearly identified (e.g. "Cash on Delivery (Demo)" or "bKash (Demo Simulation)").
    - Disclaimer confirms no real financial transaction took place.
 
+---
+
+### Protocol 12: Authentication, Security & Server-Side Purchase Protection Verification
+
+#### Automated Security Test Suite
+Run the dedicated security and authentication test suite:
+```bash
+node scripts/test-auth-security.mjs
+```
+**Assertions Covered (43 Tests):**
+1. Unauthenticated product browsing & PDP resolution.
+2. BDT pricing consistency across catalog sources.
+3. Guest cart persistence via `localStorage` (`aura_cart_state`).
+4. Cart store mutation with stock bounds.
+5. Server-side `POST /api/orders` unauthenticated rejection (`401 Unauthorized`).
+6. Minimalist `/login` page availability with BDT branding.
+7. Minimalist `/register` page availability with BDT branding.
+8. Email + Password credentials authentication handler.
+9. "Continue with Google" OAuth 2.0 / OIDC handler.
+10. Honest transactional email configuration notices for password resets.
+11. Password hashing with `bcryptjs` at cost factor 12.
+12. Registration strictly defaults user role to `CUSTOMER`.
+13. Passwords stored strictly as non-reversible bcrypt hashes (`$2b$`).
+14. Registration rejects password mismatch.
+15. Registration enforces minimum password length (≥ 8 characters).
+16. Server rejects client-submitted privilege escalation attempts (`role: "ADMIN"`).
+17. Seed database initializes with hashed passwords for demo accounts.
+18. Server database implements `getUserByEmail` DAO lookup.
+19. Valid credentials successfully authenticate.
+20. Invalid credentials fail authentication with generic non-enumerating error.
+21. Zero-trust order pricing recalculation strictly derives totals from catalog, ignoring client prices.
+22. Order ownership bound strictly to `session.user.id`, ignoring client-submitted user ID.
+23. `GET /api/orders/[id]` validates ownership against active session ID.
+24. `getOrderById` returns null / 403 when User A attempts to view User B's order.
+25. `GET /api/orders` returns orders strictly isolated to authenticated user.
+26. Real-time variant inventory validation rejects over-purchasing.
+27. Checkout modal gate displays authentication requirement while keeping cart items intact.
+28-32. HTTP security headers configured (CSP, X-Frame-Options, X-Content-Type-Options, HSTS, Referrer-Policy).
+33-36. `.env.example` documents environment variable names without exposing real credentials.
+37-38. `auth.ts` sources credentials strictly from environment variables.
+39-43. Pre-seeded demo personas, customer role enforcement, and server-validated admin protection.
+
+#### Manual Authentication & Purchase Flow
+1. **Guest Browsing & Cart Addition:**
+   - Visit `/` and `/c/furniture` as an unauthenticated guest.
+   - Add "Nordic Lounge Chair" (Natural Oak / Canvas) to bag.
+   - Cart drawer opens; cart counter badge animates to `1`.
+2. **Authentication Gate at Checkout:**
+   - Click "Proceed to Checkout" or navigate to `/checkout`.
+   - An amber authentication gate appears: *"Authentication Required to Place Order"*.
+   - Clicking "Sign In to Complete Order" or "Create an Account" triggers the Authentication Gate modal.
+3. **Registration / Login:**
+   - Click "Sign In" to navigate to `/login?callbackUrl=/checkout`.
+   - Notice demo credentials pre-filled or selectable for 1-click testing (`arif@demo.aura` / `AuraLiving2026!`).
+   - Authenticate successfully.
+4. **Return & Cart Preservation:**
+   - System redirects immediately back to `/checkout`.
+   - The "Nordic Lounge Chair" remains in the cart with all selected variants and quantities.
+5. **Order Completion & Ownership:**
+   - Complete checkout with demo Cash on Delivery or bKash.
+   - Server recalculates prices and creates order assigned to the authenticated user ID.
+   - User is redirected to `/order/[id]/confirmation`.
+   - Navigate to `/account/orders`: order is listed with full item details.
+6. **Unauthorized Access Protection:**
+   - Sign out via `/account` or header.
+   - Try to access `/account/orders`: redirected to `/login?callbackUrl=/account/orders`.
+   - Attempt direct API query `GET /api/orders/[id]`: rejected with `401 Unauthorized`.
+   - Sign in as a different user: querying another user's order ID returns `404` / `403`.
+
+
 

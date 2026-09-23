@@ -9,6 +9,7 @@ import { useAuthStore } from "@/store/auth-store";
 import { User, LogIn, LogOut, ShieldCheck, Heart, ShoppingBag } from "lucide-react";
 import { useWishlistStore } from "@/store/wishlist-store";
 import { useCartStore } from "@/store/cart-store";
+import { useSession, signOut } from "next-auth/react";
 
 interface MobileNavProps {
   isOpen: boolean;
@@ -17,6 +18,11 @@ interface MobileNavProps {
 
 export function MobileNav({ isOpen, onClose }: MobileNavProps) {
   const { user, isAuthenticated, switchUser, logout } = useAuthStore();
+  const { data: session } = useSession();
+  const effectiveUser = session?.user
+    ? { name: session.user.name || "Member", email: session.user.email || "" }
+    : user;
+  const isAuthed = !!session?.user || isAuthenticated;
   const wishlistCount = useWishlistStore((state) => state.items.length);
   const cartCount = useCartStore((state) => state.items.reduce((acc, i) => acc + i.quantity, 0));
 
@@ -96,30 +102,49 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
           </div>
         </div>
 
-        {/* Demo User Session */}
+        {/* User Session Block */}
         <div className="p-3 bg-[#FAF9F6] border border-[#E4E7EB] rounded-lg">
-          <p className="text-xs font-semibold text-[#14171A] mb-2 flex items-center gap-1.5">
-            <User className="w-3.5 h-3.5 text-[#1F4E43]" />
-            <span>Demo Customer Session</span>
+          <p className="text-xs font-semibold text-[#14171A] mb-2 flex items-center justify-between">
+            <span className="flex items-center gap-1.5">
+              <User className="w-3.5 h-3.5 text-[#1F4E43]" />
+              <span>{isAuthed ? "Verified Customer" : "Customer Portal"}</span>
+            </span>
+            {isAuthed && (
+              <span className="text-[10px] text-[#18804E] font-bold bg-[#18804E]/10 px-1.5 py-0.5 rounded">
+                Active
+              </span>
+            )}
           </p>
 
-          {isAuthenticated && user ? (
+          {isAuthed && effectiveUser ? (
             <div>
-              <p className="text-xs text-[#14171A] font-medium">{user.name}</p>
-              <p className="text-[11px] text-[#6B7280]">{user.email}</p>
-              <div className="mt-2 flex gap-2">
+              <p className="text-xs text-[#14171A] font-medium">{effectiveUser.name}</p>
+              <p className="text-[11px] text-[#6B7280] truncate">{effectiveUser.email}</p>
+              <div className="mt-2 flex flex-wrap gap-2 text-xs">
+                <Link
+                  href="/account"
+                  onClick={onClose}
+                  className="text-[#1F4E43] hover:underline font-medium"
+                >
+                  Account
+                </Link>
+                <span className="text-[#D1D5DB]">•</span>
                 <Link
                   href="/account/orders"
                   onClick={onClose}
-                  className="text-xs text-[#1F4E43] hover:underline font-medium"
+                  className="text-[#1F4E43] hover:underline font-medium"
                 >
-                  Order History
+                  Orders
                 </Link>
                 <span className="text-[#D1D5DB]">•</span>
                 <button
                   type="button"
-                  onClick={() => logout()}
-                  className="text-xs text-[#C2222E] hover:underline flex items-center gap-1 cursor-pointer"
+                  onClick={() => {
+                    logout();
+                    signOut({ callbackUrl: "/" });
+                    onClose();
+                  }}
+                  className="text-[#C2222E] hover:underline flex items-center gap-1 cursor-pointer"
                 >
                   <LogOut className="w-3 h-3" />
                   Sign Out
@@ -127,14 +152,33 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
               </div>
             </div>
           ) : (
-            <div className="space-y-1.5">
+            <div className="space-y-2">
+              <div className="flex gap-2">
+                <Link
+                  href="/login"
+                  onClick={onClose}
+                  className="flex-1 py-1 text-center text-xs font-semibold bg-[#1F4E43] text-white rounded hover:bg-[#183E35]"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/register"
+                  onClick={onClose}
+                  className="flex-1 py-1 text-center text-xs font-semibold bg-white border border-[#E4E7EB] text-[#14171A] rounded hover:border-[#1F4E43]"
+                >
+                  Register
+                </Link>
+              </div>
               <p className="text-[11px] text-[#6B7280]">Switch to a demo profile:</p>
               <div className="flex flex-col gap-1">
                 {DEMO_USERS.map((u) => (
                   <button
                     key={u.id}
                     type="button"
-                    onClick={() => switchUser(u.email)}
+                    onClick={() => {
+                      switchUser(u.email);
+                      onClose();
+                    }}
                     className="flex items-center justify-between text-xs py-1 px-2 rounded bg-white border border-[#E4E7EB] hover:border-[#1F4E43] text-left cursor-pointer"
                   >
                     <span>{u.name}</span>

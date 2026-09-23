@@ -20,6 +20,7 @@ import { useCartStore } from "@/store/cart-store";
 import { useWishlistStore } from "@/store/wishlist-store";
 import { useAuthStore } from "@/store/auth-store";
 import { DEMO_USERS } from "@/data/users";
+import { useSession, signOut } from "next-auth/react";
 
 const NAV_LINKS = [
   { href: "/c/furniture", label: "Furniture" },
@@ -44,6 +45,11 @@ export function Header() {
   const openCartDrawer = useCartStore((state) => state.openDrawer);
   const wishlistCount = useWishlistStore((state) => state.items.length);
   const { user, isAuthenticated, switchUser, logout } = useAuthStore();
+  const { data: session } = useSession();
+  const effectiveUser = session?.user
+    ? { name: session.user.name || "Member", email: session.user.email || "" }
+    : user;
+  const isAuthed = !!session?.user || isAuthenticated;
 
   const prevCartRef = React.useRef(totalCartCount);
   const prevWishlistRef = React.useRef(wishlistCount);
@@ -189,9 +195,9 @@ export function Header() {
                   aria-expanded={isUserMenuOpen}
                 >
                   <User className="w-5 h-5" />
-                  {isAuthenticated && user && (
+                  {isAuthed && effectiveUser && (
                     <span className="hidden xl:inline text-xs font-medium text-[#14171A] max-w-[80px] truncate">
-                      {user.name.split(" ")[0]}
+                      {effectiveUser.name.split(" ")[0]}
                     </span>
                   )}
                 </button>
@@ -203,17 +209,35 @@ export function Header() {
                   >
                     <div className="px-4 py-2 border-b border-[#F3F4F6]">
                       <p className="text-xs text-[#9CA3AF] uppercase font-semibold tracking-wider">
-                        Demo Account Portal
+                        {isAuthed ? "Customer Account" : "Account Portal"}
                       </p>
-                      {isAuthenticated && user ? (
+                      {isAuthed && effectiveUser ? (
                         <div className="mt-1">
-                          <p className="text-sm font-semibold text-[#14171A]">{user.name}</p>
-                          <p className="text-xs text-[#6B7280]">{user.email}</p>
+                          <p className="text-sm font-semibold text-[#14171A]">{effectiveUser.name}</p>
+                          <p className="text-xs text-[#6B7280] truncate">{effectiveUser.email}</p>
                         </div>
                       ) : (
-                        <p className="text-xs text-[#6B7280] mt-1">
-                          Currently browsing as <strong>Guest</strong>
-                        </p>
+                        <div className="mt-1 space-y-1.5">
+                          <p className="text-xs text-[#6B7280]">
+                            Currently browsing as <strong>Guest</strong>
+                          </p>
+                          <div className="flex gap-2 pt-1">
+                            <Link
+                              href="/login"
+                              onClick={() => setIsUserMenuOpen(false)}
+                              className="flex-1 py-1 text-center text-xs font-semibold bg-[#1F4E43] text-white rounded hover:bg-[#183E35]"
+                            >
+                              Sign In
+                            </Link>
+                            <Link
+                              href="/register"
+                              onClick={() => setIsUserMenuOpen(false)}
+                              className="flex-1 py-1 text-center text-xs font-semibold bg-white border border-[#E4E7EB] text-[#14171A] rounded hover:border-[#1F4E43]"
+                            >
+                              Register
+                            </Link>
+                          </div>
+                        </div>
                       )}
                     </div>
 
@@ -222,7 +246,7 @@ export function Header() {
                         Switch Persona:
                       </p>
                       {DEMO_USERS.map((u) => {
-                        const isCurrent = user?.id === u.id;
+                        const isCurrent = effectiveUser?.email.toLowerCase() === u.email.toLowerCase();
                         return (
                           <button
                             key={u.id}
@@ -244,6 +268,13 @@ export function Header() {
 
                     <div className="py-1">
                       <Link
+                        href="/account"
+                        onClick={() => setIsUserMenuOpen(false)}
+                        className="block px-4 py-1.5 text-xs text-[#14171A] hover:bg-[#FAF9F6]"
+                      >
+                        Account &amp; Security
+                      </Link>
+                      <Link
                         href="/account/orders"
                         onClick={() => setIsUserMenuOpen(false)}
                         className="block px-4 py-1.5 text-xs text-[#14171A] hover:bg-[#FAF9F6]"
@@ -259,17 +290,18 @@ export function Header() {
                         Admin Demo Controller
                       </Link>
 
-                      {isAuthenticated && (
+                      {isAuthed && (
                         <button
                           type="button"
                           onClick={() => {
                             logout();
+                            signOut({ callbackUrl: "/" });
                             setIsUserMenuOpen(false);
                           }}
                           className="w-full flex items-center gap-1.5 px-4 py-1.5 text-xs text-[#C2222E] hover:bg-[#FAF9F6] text-left cursor-pointer"
                         >
                           <LogOut className="w-3.5 h-3.5" />
-                          Sign Out to Guest
+                          Sign Out
                         </button>
                       )}
                     </div>

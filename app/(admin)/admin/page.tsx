@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useSession, signIn } from "next-auth/react";
 import {
   Boxes,
   ClipboardList,
@@ -12,6 +13,8 @@ import {
   Eye,
   Sliders,
   Sparkles,
+  ShieldCheck,
+  Lock,
 } from "lucide-react";
 import { getRawProducts, updateVariantStock } from "@/lib/api/products";
 import { useOrderStore } from "@/store/order-store";
@@ -20,10 +23,13 @@ import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 
 export default function AdminPage() {
+  const { data: session, status } = useSession();
   const [activeTab, setActiveTab] = useState<"inventory" | "orders" | "vitals">("inventory");
   const [products, setProducts] = useState(() => getRawProducts());
   const { orders, advanceOrderStatus } = useOrderStore();
   const [selectedOrderJson, setSelectedOrderJson] = useState<any | null>(null);
+
+  const isAdmin = session?.user?.role === "ADMIN";
 
   const handleStockUpdate = (productId: string, variantId: string, newStock: number) => {
     updateVariantStock(productId, variantId, newStock);
@@ -31,19 +37,65 @@ export default function AdminPage() {
     setProducts([...getRawProducts()]);
   };
 
+  const handleAdminQuickLogin = async () => {
+    await signIn("credentials", {
+      email: "admin@demo.aura",
+      password: "AuraLiving2026!",
+      callbackUrl: "/admin",
+    });
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      {/* Simulation Sandbox Notice Banner */}
-      <div className="mb-8 p-4 rounded-xl bg-amber-50 border border-amber-200 flex items-start gap-3 text-xs text-amber-900">
-        <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-        <div>
-          <p className="font-bold uppercase tracking-wider text-[11px] text-amber-800">
-            Portfolio Demonstration Sandbox (Unsecured Interface)
-          </p>
-          <p className="mt-0.5 text-amber-800/90 leading-relaxed">
-            This administrative control center operates client-side for evaluating real-time stock mutations, variant states (In Stock / Low Stock / Out of Stock), and order lifecycle transitions. It is intentionally unauthenticated for portfolio review and client validation, and does not imply a production-secured administration system.
-          </p>
+      {/* Simulation Sandbox & Role Notice Banner */}
+      <div className="mb-8 p-5 rounded-2xl bg-white border border-[#E4E7EB] shadow-xs space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-[#F3F4F6]">
+          <div className="flex items-center gap-2.5">
+            <ShieldCheck className="w-5 h-5 text-[#1F4E43]" />
+            <h2 className="font-serif text-base font-semibold text-[#14171A]">
+              Demo Admin / Simulation Control Center
+            </h2>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {isAdmin ? (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold text-[#18804E] bg-[#18804E]/10 border border-[#18804E]/20">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                Authenticated as Operations Admin
+              </span>
+            ) : status === "authenticated" ? (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold text-[#B45309] bg-[#F59E0B]/10 border border-[#F59E0B]/20">
+                <AlertCircle className="w-3.5 h-3.5" />
+                Logged in as Customer ({session?.user?.email})
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold text-[#6B7280] bg-gray-100">
+                <Lock className="w-3.5 h-3.5" />
+                Unauthenticated Guest Simulation
+              </span>
+            )}
+          </div>
         </div>
+
+        <p className="text-xs text-[#6B7280] leading-relaxed">
+          This hub allows evaluating dynamic stock mutations, out-of-stock PDP cross-fades, and order lifecycle transitions. In production, administrative operations strictly require verified server-side <strong>ADMIN</strong> roles.
+        </p>
+
+        {!isAdmin && (
+          <div className="pt-1 flex flex-wrap items-center gap-3">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleAdminQuickLogin}
+              className="text-xs text-[#1F4E43] border-[#1F4E43]/30 hover:bg-[#1F4E43]/5"
+            >
+              Sign In as Admin Persona (admin@demo.aura)
+            </Button>
+            <span className="text-[11px] text-[#9CA3AF]">
+              Demonstrates server-side role evaluation without manual form entry.
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Header & Tabs */}

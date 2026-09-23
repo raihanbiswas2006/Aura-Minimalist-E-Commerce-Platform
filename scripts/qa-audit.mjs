@@ -16,6 +16,8 @@ const routes = [
   '/wishlist',
   '/account',
   '/account/orders',
+  '/login',
+  '/register',
   '/admin',
   '/about',
   '/shipping',
