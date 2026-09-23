@@ -241,5 +241,20 @@ node scripts/test-auth-security.mjs
    - Attempt direct API query `GET /api/orders/[id]`: rejected with `401 Unauthorized`.
    - Sign in as a different user: querying another user's order ID returns `404` / `403`.
 
+---
+
+### Protocol 13: Platform-Aware Search Shortcut Badge Verification
+1. **Windows/Linux Browsers (Chrome, Edge, Firefox):**
+   - Inspect desktop search input badge: renders `Ctrl K`.
+   - Press `Ctrl + K`: search input receives focus and selects existing text.
+2. **macOS Browsers (Safari, Chrome):**
+   - Inspect desktop search input badge: renders `⌘ K`.
+   - Press `⌘ + K` (`Meta + K`): search input receives focus and selects existing text.
+3. **Hydration Integrity:**
+   - Safe initial render with client-side detection in `useEffect` guarantees zero React hydration mismatches on initial page load across all user agents.
+4. **Mobile Responsiveness:**
+   - On viewports < 640px and within the mobile search overlay (`isMobileModal`), the shortcut badge remains hidden, preserving clean touch ergonomics.
+
+
 
 

@@ -239,8 +239,31 @@ The platform underwent a complete localization pass converting generic USD-based
 ### 7.2 Automated Test & Verification Results
 - **TypeScript Strict Compilation (`tsc --noEmit`):** 0 errors.
 - **UX & Micro-Interaction Static & Contract Verification (`verify-ux.mjs`):** 21/21 tests passed (100%).
-- **Security & Authentication Test Suite (`test-auth-security.mjs`):** 43/43 tests passed (100%).
+- **Security & Authentication Test Suite (`test-auth-security.mjs`):** 45/45 tests passed (100%).
 - **Production Build (`npm run build`):** 23/23 routes compiled successfully.
+
+---
+
+## 8. Search Shortcut Badge Platform-Awareness Correction
+
+**Pass Identifier:** `SEARCH-BADGE-2026-V1`  
+**Completion Date:** September 23, 2026  
+**Status:** 100% Complete & Verified  
+
+### 8.1 Issue Description & Resolution
+- **Issue:** On the right side of the search input, the keyboard shortcut badge hardcoded the macOS Command symbol (`⌘ K`). For Windows and Linux users, this created confusion as the operating system modifier key is Control (`Ctrl`).
+- **Correction:**
+  1. **Hydration-Safe Client Detection:** Introduced safe client-side detection in `components/search/search-autocomplete.tsx` via `useEffect`. Default initial render provides `Ctrl K` for SSR and initial hydration, avoiding any React hydration mismatches, while post-hydration platform detection updates the badge to `⌘ K` on macOS/iOS environments.
+  2. **Keyboard Handler Platform Alignment:** Configured global key listener to check `e.metaKey` on macOS and `e.ctrlKey` on Windows/Linux matching the badge label, while continuing to focus and select the search input.
+  3. **Visual Alignment & Spacing:** Adjusted input right padding (`pr-16`) and clear button offset (`${isMac ? "right-9" : "right-12"}`) to guarantee zero visual collisions between typed text, the clear button, and the badge across both `⌘ K` and `Ctrl K`.
+  4. **Accessibility:** Added dynamic `aria-keyshortcuts` (`Meta+K` or `Control+K`) to the search input.
+
+### 8.2 Verification
+- `npx tsc --noEmit`: 0 errors.
+- `node scripts/verify-ux.mjs`: 21/21 tests passed.
+- `node scripts/test-auth-security.mjs`: 45/45 tests passed.
+- `npm run build`: 23/23 routes successfully compiled.
+
 
 
 

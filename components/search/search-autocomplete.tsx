@@ -40,8 +40,22 @@ export function SearchAutocomplete({ onSearchSubmit, className = "", isMobileMod
   const [results, setResults] = useState<SearchResult | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [isMac, setIsMac] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Safe client-side platform detection to prevent Next.js hydration mismatches
+  useEffect(() => {
+    if (typeof window !== "undefined" && typeof navigator !== "undefined") {
+      const isMacPlatform = /(Mac|iPhone|iPod|iPad)/i.test(
+        (navigator as { userAgentData?: { platform?: string } }).userAgentData?.platform ||
+          navigator.platform ||
+          navigator.userAgent ||
+          ""
+      );
+      setIsMac(isMacPlatform);
+    }
+  }, []);
 
   // Debounce search by 250ms per PRD Section 11.1
   useEffect(() => {
@@ -61,10 +75,20 @@ export function SearchAutocomplete({ onSearchSubmit, className = "", isMobileMod
     return () => clearTimeout(timer);
   }, [query]);
 
-  // Global keyboard shortcut Cmd+K / Ctrl+K
+  // Global keyboard shortcut: Meta+K on macOS, Ctrl+K on Windows/Linux
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+      const isMacPlatform = /(Mac|iPhone|iPod|iPad)/i.test(
+        (navigator as { userAgentData?: { platform?: string } })?.userAgentData?.platform ||
+          navigator?.platform ||
+          navigator?.userAgent ||
+          ""
+      );
+      const isShortcutTriggered = isMacPlatform
+        ? e.metaKey && e.key.toLowerCase() === "k"
+        : e.ctrlKey && e.key.toLowerCase() === "k";
+
+      if (isShortcutTriggered) {
         e.preventDefault();
         inputRef.current?.focus();
         inputRef.current?.select();
@@ -127,7 +151,8 @@ export function SearchAutocomplete({ onSearchSubmit, className = "", isMobileMod
             if (query.trim().length >= 2) setIsOpen(true);
           }}
           placeholder="Search products, materials, collections..."
-          className="w-full h-10 pl-9 pr-14 text-sm bg-white border border-[#E4E7EB] rounded-full focus-visible:outline-2 focus-visible:outline-[#1F4E43] placeholder:text-[#9CA3AF] text-[#14171A] transition-all"
+          aria-keyshortcuts={isMac ? "Meta+K" : "Control+K"}
+          className="w-full h-10 pl-9 pr-16 text-sm bg-white border border-[#E4E7EB] rounded-full focus-visible:outline-2 focus-visible:outline-[#1F4E43] placeholder:text-[#9CA3AF] text-[#14171A] transition-all"
         />
 
         {query && (
@@ -139,7 +164,7 @@ export function SearchAutocomplete({ onSearchSubmit, className = "", isMobileMod
               setIsOpen(false);
               inputRef.current?.focus();
             }}
-            className="absolute right-9 p-1 text-[#9CA3AF] hover:text-[#14171A] rounded-full cursor-pointer"
+            className={`absolute ${isMac ? "right-9" : "right-12"} p-1 text-[#9CA3AF] hover:text-[#14171A] rounded-full cursor-pointer`}
             aria-label="Clear search query"
           >
             <X className="w-3.5 h-3.5" />
@@ -148,7 +173,7 @@ export function SearchAutocomplete({ onSearchSubmit, className = "", isMobileMod
 
         {!isMobileModal && (
           <div className="absolute right-3 hidden sm:flex items-center gap-0.5 pointer-events-none text-[10px] text-[#9CA3AF] bg-[#F3F4F6] px-1.5 py-0.5 rounded border border-[#E5E7EB]">
-            <span>⌘</span>
+            <span>{isMac ? "⌘" : "Ctrl"}</span>
             <span>K</span>
           </div>
         )}

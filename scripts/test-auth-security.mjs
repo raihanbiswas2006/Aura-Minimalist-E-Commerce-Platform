@@ -217,6 +217,13 @@ assert(dbCode.includes('role: "ADMIN"'), "Admin role is assigned through trusted
 const adminPageCode = fs.readFileSync("app/(admin)/admin/page.tsx", "utf8");
 assert(adminPageCode.includes('session?.user?.role === "ADMIN"'), "Admin hub verifies server-side ADMIN role from session");
 
+// -----------------------------------------------------------------------------
+// TEST 18: Search shortcut badge platform-awareness & hydration safety
+// -----------------------------------------------------------------------------
+const searchCode = fs.readFileSync("components/search/search-autocomplete.tsx", "utf8");
+assert(searchCode.includes('isMac ? "⌘" : "Ctrl"'), "Search badge renders Ctrl on Windows/Linux and ⌘ on macOS");
+assert(searchCode.includes("isShortcutTriggered"), "Search keyboard listener triggers on Meta+K (Mac) or Ctrl+K (Windows/Linux)");
+
 console.log(`\n================================================================================`);
 console.log(`Security Test Suite Complete: Passed ${passed}/${total}, Failed: ${total - passed}`);
 console.log("================================================================================\n");
@@ -226,3 +233,4 @@ if (passed === total) {
 } else {
   process.exit(1);
 }
+
