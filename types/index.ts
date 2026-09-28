@@ -22,7 +22,7 @@ export interface Product {
   title: string;
   subtitle: string;
   description: string;
-  categoryId: string;
+  categoryId: string;// Reference to Category
   basePrice: number;
   discountPrice?: number;
   rating: number;
