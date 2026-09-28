@@ -72,18 +72,18 @@ export interface CartState {
 
 // Checkout & Order Entities
 export interface Address {
-  fullName: string;
-  email: string;
-  phone: string;
+  fullName: string;//Full Name
+  email: string;//Email Address
+  phone: string;//Phone Number
   division: string; // Bangladesh Division
   district: string; // District / Zila
   area: string; // Area / Upazila / Thana
-  streetAddress: string;
-  apartment?: string;
+  streetAddress: string;//Street Address
+  apartment?: string;//Apartment
   city?: string; // Fallback / district alias
   state?: string; // Fallback / division alias
-  postalCode: string;
-  country: string;
+  postalCode: string; //Postal Code
+  country: string;//Country
 }
 
 export type OrderStatus = 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
@@ -150,15 +150,15 @@ export interface DemoUser {
 // Analytics Event
 export interface AnalyticsEvent {
   event:
-    | 'view_item_list'
-    | 'view_item'
-    | 'select_item'
-    | 'add_to_cart'
-    | 'remove_from_cart'
-    | 'view_cart'
-    | 'begin_checkout'
-    | 'apply_coupon'
-    | 'purchase';
+  | 'view_item_list'
+  | 'view_item'
+  | 'select_item'
+  | 'add_to_cart'
+  | 'remove_from_cart'
+  | 'view_cart'
+  | 'begin_checkout'
+  | 'apply_coupon'
+  | 'purchase';
   payload: Record<string, unknown>;
   timestamp: string;
 }
