@@ -47,9 +47,10 @@ export function Header() {
   const { user, isAuthenticated, switchUser, logout } = useAuthStore();
   const { data: session } = useSession();
   const effectiveUser = session?.user
-    ? { name: session.user.name || "Member", email: session.user.email || "" }
+    ? { name: session.user.name || "Member", email: session.user.email || "", role: session.user.role }
     : user;
   const isAuthed = !!session?.user || isAuthenticated;
+  const isAdmin = session?.user?.role === "ADMIN";
 
   const prevCartRef = React.useRef(totalCartCount);
   const prevWishlistRef = React.useRef(wishlistCount);
@@ -281,14 +282,16 @@ export function Header() {
                       >
                         Historical Orders
                       </Link>
-                      <Link
-                        href="/admin"
-                        onClick={() => setIsUserMenuOpen(false)}
-                        className="flex items-center gap-1.5 px-4 py-1.5 text-xs text-[#1F4E43] hover:bg-[#FAF9F6] font-medium"
-                      >
-                        <ShieldCheck className="w-3.5 h-3.5" />
-                        Admin Demo Controller
-                      </Link>
+                      {isAdmin && (
+                        <Link
+                          href="/admin"
+                          onClick={() => setIsUserMenuOpen(false)}
+                          className="flex items-center gap-1.5 px-4 py-1.5 text-xs text-[#1F4E43] hover:bg-[#FAF9F6] font-medium"
+                        >
+                          <ShieldCheck className="w-3.5 h-3.5" />
+                          Admin Demo Controller
+                        </Link>
+                      )}
 
                       {isAuthed && (
                         <button

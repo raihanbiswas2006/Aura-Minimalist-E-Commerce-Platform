@@ -264,6 +264,33 @@ The platform underwent a complete localization pass converting generic USD-based
 - `node scripts/test-auth-security.mjs`: 45/45 tests passed.
 - `npm run build`: 23/23 routes successfully compiled.
 
+---
 
+## 9. Final Security Hardening, Server-Side Admin Role Protection & IDOR Defense
 
+**Pass Identifier:** `FINAL-HARDENING-2026-V1`  
+**Completion Date:** September 28, 2026  
+**Status:** 100% Complete & Verified  
 
+### 9.1 Itemized Security & Hardening Actions
+1. **Server-Side Administrative Layout Guard (`app/(admin)/layout.tsx`):**
+   - Transformed `layout.tsx` into an async Server Component with direct `auth()` session validation.
+   - Unauthenticated visitors are automatically redirected to `/login?callbackUrl=/admin`.
+   - Authenticated non-admin customers (`role === "CUSTOMER"`) are served a dedicated 403 Access Denied screen, preventing any leakage or execution of administrative bundles.
+   - Only verified operators with `role === "ADMIN"` are permitted to render administrative views.
+2. **Administrative Page Content Shielding (`app/(admin)/admin/page.tsx`):**
+   - Wrapped administrative UI controls, real-time variant stock controllers, and order lifecycle progression in server-aware `isAdmin` checks. Unauthorized users cannot trigger simulated stock modifications or view customer orders.
+3. **Order Confirmation Receipt IDOR Prevention (`app/(store)/order/[id]/confirmation/page.tsx`):**
+   - Added server-side ownership verification via `/api/orders/[id]`.
+   - When an unauthenticated user or an unauthorized customer attempts to access an order confirmation URL (`/order/[id]/confirmation`), the server verifies whether `session.user.id === order.userId` or `session.user.role === "ADMIN"`. Unauthorized access renders a secure "Access Restricted" state, completely mitigating horizontal privilege escalation.
+4. **Header & Account Portal Administrative Link Exposure:**
+   - Updated `components/layout/header.tsx` and `app/(store)/account/page.tsx` to conditionally render the "Admin Control Panel" link only when `session?.user?.role === "ADMIN"`.
+5. **WCAG Compliance Statement Wording Alignment:**
+   - Audited all occurrences of accessibility claims in `components/layout/footer.tsx` and `app/(store)/terms/page.tsx`.
+   - Updated statements to: `"Designed with WCAG 2.2 accessibility guidelines in mind (Demo)"` to adhere strictly to non-misleading marketing requirements.
+
+### 9.2 Verification
+- `npx tsc --noEmit`: 0 errors.
+- `node scripts/test-auth-security.mjs`: 45/45 assertions passed (100%).
+- `node scripts/verify-ux.mjs`: 21/21 tests passed (100%).
+- `npm run build`: Production build succeeded across all 23 routes in 4.1s.

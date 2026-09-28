@@ -14,7 +14,7 @@ export default function TermsPage() {
       <section className="space-y-2 pt-4">
         <h2 className="text-sm font-semibold text-[#14171A]">1. Demonstration Platform</h2>
         <p>
-          This website is a modern portfolio showcase of &ldquo;Aura Living&rdquo;, built to validate high-conversion architecture, WCAG 2.2 AA accessibility, sub-second transitions, and responsive minimalism. No live monetary sales are enacted.
+          This website is a modern portfolio showcase of &ldquo;Aura Living&rdquo;, built to validate high-conversion architecture, designed with WCAG 2.2 accessibility guidelines in mind, sub-second transitions, and responsive minimalism. No live monetary sales are enacted.
         </p>
       </section>
 

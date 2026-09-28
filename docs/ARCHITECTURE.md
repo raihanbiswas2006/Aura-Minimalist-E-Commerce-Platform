@@ -163,4 +163,4 @@ aura-storefront-web/
 | Create Order (`POST /api/orders`) | Denied (401) | Allowed | Allowed |
 | Order History (`GET /api/orders`) | Denied (401) | Own Orders Only | Own Orders Only |
 | Order Detail (`GET /api/orders/[id]`) | Denied (401) | Own Order (403 if not owner) | All Orders |
-| Administrative Hub (`/admin`) | Demo Simulation | Restricted Demo | Full Authorization |
+| Administrative Hub (`/admin`) | Denied (Redirect → `/login`) | Denied (403 Access Denied) | Full Authorization |

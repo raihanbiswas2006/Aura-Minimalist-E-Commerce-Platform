@@ -47,7 +47,7 @@ export function Footer() {
             </p>
             <div className="flex items-center gap-2 text-xs text-[#9CA3AF] pt-2">
               <Shield className="w-4 h-4 text-[#2D6A5D]" />
-              <span>Designed following WCAG 2.2 AA guidelines (Demo)</span>
+              <span>Designed with WCAG 2.2 accessibility guidelines in mind (Demo)</span>
             </div>
             <div className="inline-block bg-white/5 border border-white/10 rounded-md px-3 py-1 text-[11px] text-[#9CA3AF]">
               Demonstration Prototype • No Live Financial Processing

@@ -95,14 +95,18 @@ node scripts/qa-audit.mjs
 
 ---
 
-### Protocol 8: Admin Demonstration Panel (`/admin`)
-1. **Action:** Navigate to `/admin`.
-2. **Result:** Prominent amber banner clearly states that the page is an interactive demonstration sandbox and an unsecured client-side simulation.
-3. **Action:** In the "Inventory" tab, click "Set to 0 (OOS)" on any product variant.
-4. **Action:** Open that product's PDP in a new tab.
-5. **Result:** PDP immediately reflects out-of-stock state.
-6. **Action:** In the "Orders" tab, advance any demo order from `pending` to `processing` to `shipped` to `delivered`.
-7. **Result:** Order status advances and updates in `/account/orders`.
+### Protocol 8: Admin Demonstration Panel & Role Protection (`/admin`)
+1. **Action:** Navigate to `/admin` as an unauthenticated guest.
+2. **Result:** Immediately redirected by server-side `app/(admin)/layout.tsx` to `/login?callbackUrl=/admin`.
+3. **Action:** Sign in as a standard customer (e.g., `arif@demo.aura`). Navigate to `/admin`.
+4. **Result:** Server blocks access with a dedicated 403 screen: "Administrative Access Restricted — This portal requires verified Operations Administrator credentials."
+5. **Action:** Sign in as an administrator (`admin@demo.aura`). Navigate to `/admin`.
+6. **Result:** Access granted. Full administrative dashboard loads with live inventory stock controls, variant modifiers, and order lifecycle management.
+7. **Action:** In the "Inventory" tab, click "Set to 0 (OOS)" on any product variant.
+8. **Action:** Open that product's PDP in a new tab.
+9. **Result:** PDP immediately reflects out-of-stock state.
+10. **Action:** In the "Orders" tab, advance any demo order from `pending` to `processing` to `shipped` to `delivered`.
+11. **Result:** Order status advances and updates in `/account/orders`.
 
 ---
 
@@ -255,6 +259,14 @@ node scripts/test-auth-security.mjs
 4. **Mobile Responsiveness:**
    - On viewports < 640px and within the mobile search overlay (`isMobileModal`), the shortcut badge remains hidden, preserving clean touch ergonomics.
 
+---
 
-
-
+### Protocol 14: Order Ownership & Horizontal Isolation (Anti-IDOR) Verification
+1. **Action:** Log in as Customer A (`arif@demo.aura`), add an item to the cart, and complete an order (e.g. `AUR-20260928-ABCD`).
+2. **Action:** Open order confirmation page: `/order/AUR-20260928-ABCD/confirmation`.
+3. **Result:** Order receipt renders cleanly with matching items, pricing in BDT, and delivery details.
+4. **Action:** Log out of Customer A's account via `/account` or the header user menu.
+5. **Action:** Log in as Customer B (`nusrat@demo.aura`). Navigate directly to `/order/AUR-20260928-ABCD/confirmation`.
+6. **Result:** Client queries `/api/orders/AUR-20260928-ABCD`. Server blocks access with `403 Forbidden` / `404 Not Found`. Page renders "Access Restricted — You do not have permission to view this order confirmation receipt."
+7. **Action:** Log in as Administrator (`admin@demo.aura`). Navigate to `/order/AUR-20260928-ABCD/confirmation`.
+8. **Result:** Server recognizes administrative role and permits view for customer support operations.

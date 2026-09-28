@@ -197,3 +197,17 @@ npm run build
 * **Self-Service Password Reset:** Password reset links are documented in the UI and require integrating an active transactional email provider (such as Resend, Amazon SES, or SendGrid) to dispatch verification tokens.
 * **Rate Limiting:** An in-memory sliding-window rate limiter is included for auth and order routes. In distributed multi-region serverless deployments, consider connecting Upstash Redis (`@upstash/ratelimit`).
 * **Database Scaling:** The local file store (`data/db.json`) provides zero-dependency local testing. For high-concurrency production deployments, provision a managed PostgreSQL or LibSQL database via `DATABASE_URL`.
+* **Simulated Payments:** Payments are intentionally simulated (Cash on Delivery, bKash Demo, Nagad Demo, Rocket Demo, Demo Card) for portfolio and showcase safety. No live financial processing takes place.
+
+---
+
+## 10. Deployment & Production Guide
+
+For end-to-end instructions on deploying Aura Living to Vercel, configuring production environment variables, setting up Google OAuth credentials, and verifying post-deployment health, consult:
+
+* **Deployment Manual:** [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md)
+* **Architecture Specification:** [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
+* **Product Requirements Document:** [`docs/PRD.md`](docs/PRD.md)
+* **Testing Protocol:** [`docs/TESTING.md`](docs/TESTING.md)
+* **QA & Correction Log:** [`docs/QA-REPORT.md`](docs/QA-REPORT.md)
+

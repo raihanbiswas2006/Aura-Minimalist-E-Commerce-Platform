@@ -98,21 +98,49 @@ export default function AdminPage() {
         )}
       </div>
 
-      {/* Header & Tabs */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-[#E4E7EB] mb-8 gap-4">
-        <div>
-          <h1 className="font-serif text-3xl font-bold text-[#14171A]">
-            Administrative Demonstration Hub
-          </h1>
-          <p className="text-xs text-[#6B7280] mt-1">
-            Test real-time out-of-stock behavior, advance simulated order lifecycles, and audit telemetry.
+      {!isAdmin ? (
+        <div className="bg-white rounded-2xl border border-[#E4E7EB] p-10 text-center shadow-xs space-y-4 max-w-lg mx-auto my-12">
+          <div className="w-14 h-14 rounded-full bg-[#C2222E]/10 text-[#C2222E] flex items-center justify-center mx-auto">
+            <Lock className="w-7 h-7" />
+          </div>
+          <h2 className="font-serif text-2xl font-bold text-[#14171A]">
+            Administrative Privileges Required
+          </h2>
+          <p className="text-xs text-[#6B7280] leading-relaxed">
+            The demonstration admin controller is protected by role validation. Sign in as the Operations Admin to access inventory controls and order lifecycle management.
           </p>
+          <div className="pt-2 flex flex-col gap-2.5">
+            <Button
+              onClick={handleAdminQuickLogin}
+              variant="primary"
+              className="w-full text-xs"
+            >
+              Sign In as Operations Admin (admin@demo.aura)
+            </Button>
+            <Link href="/">
+              <Button variant="outline" className="w-full text-xs">
+                Return to Storefront
+              </Button>
+            </Link>
+          </div>
         </div>
+      ) : (
+        <>
+          {/* Header & Tabs */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-[#E4E7EB] mb-8 gap-4">
+            <div>
+              <h1 className="font-serif text-3xl font-bold text-[#14171A]">
+                Administrative Demonstration Hub
+              </h1>
+              <p className="text-xs text-[#6B7280] mt-1">
+                Test real-time out-of-stock behavior, advance simulated order lifecycles, and audit telemetry.
+              </p>
+            </div>
 
-        {/* Tab Buttons */}
-        <div className="flex items-center gap-1 bg-white p-1 rounded-xl border border-[#E4E7EB] shadow-2xs">
-          <button
-            type="button"
+            {/* Tab Buttons */}
+            <div className="flex items-center gap-1 bg-white p-1 rounded-xl border border-[#E4E7EB] shadow-2xs">
+              <button
+                type="button"
             onClick={() => setActiveTab("inventory")}
             className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
               activeTab === "inventory"
@@ -395,6 +423,8 @@ export default function AdminPage() {
             </div>
           </div>
         </div>
+      )}
+        </>
       )}
 
       {/* Raw Order JSON Dialog */}

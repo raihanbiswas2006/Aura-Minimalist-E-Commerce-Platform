@@ -17,6 +17,7 @@ export default function OrderConfirmationPage({ params }: OrderConfirmationProps
   const resolvedParams = use(params);
   const { getOrderById } = useOrderStore();
   const [order, setOrder] = useState(() => getOrderById(resolvedParams.id));
+  const [serverError, setServerError] = useState<string | null>(null);
 
   useEffect(() => {
     // Trigger celebratory confetti once on mount
@@ -32,13 +33,58 @@ export default function OrderConfirmationPage({ params }: OrderConfirmationProps
     }
 
     if (!order) {
-      setOrder(getOrderById(resolvedParams.id));
+      const local = getOrderById(resolvedParams.id);
+      if (local) {
+        setOrder(local);
+      }
     }
+
+    async function verifyOrder() {
+      try {
+        const res = await fetch(`/api/orders/${resolvedParams.id}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.order) {
+            setOrder(data.order);
+          }
+        } else if (res.status === 401 || res.status === 404) {
+          // If not in local storage or unauthorized on server
+          const local = getOrderById(resolvedParams.id);
+          if (!local) {
+            setServerError("Order not found or you do not have permission to view this receipt.");
+          }
+        }
+      } catch {
+        // Network fallback gracefully retains local order if present
+      }
+    }
+
+    verifyOrder();
   }, [order, getOrderById, resolvedParams.id]);
 
   const handlePrint = () => {
     window.print();
   };
+
+  if (serverError) {
+    return (
+      <div className="max-w-md mx-auto px-4 py-24 text-center space-y-4">
+        <div className="w-14 h-14 rounded-full bg-[#C2222E]/10 text-[#C2222E] flex items-center justify-center mx-auto">
+          <ShieldCheck className="w-6 h-6" />
+        </div>
+        <h1 className="font-serif text-2xl font-bold text-[#14171A]">Access Restricted</h1>
+        <p className="text-xs text-[#6B7280] leading-relaxed">{serverError}</p>
+        <div className="pt-2 flex flex-col gap-2">
+          <Link href="/account/orders">
+            <Button variant="primary" className="w-full">Go to My Orders</Button>
+          </Link>
+          <Link href="/">
+            <Button variant="outline" className="w-full">Return to Storefront</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   // Fallback if order not found in current session memory
   const orderId = order?.orderNumber || resolvedParams.id;

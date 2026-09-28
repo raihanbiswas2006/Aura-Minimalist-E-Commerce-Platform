@@ -171,23 +171,25 @@ export default function AccountPage() {
             <ArrowRight className="w-4 h-4 text-[#9CA3AF] group-hover:translate-x-1 group-hover:text-[#1F4E43] transition-all" />
           </Link>
 
-          <Link
-            href="/admin"
-            className="flex items-center justify-between p-5 bg-white rounded-xl border border-[#1F4E43]/30 hover:border-[#1F4E43] transition-all group shadow-2xs"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-[#1F4E43]/10 flex items-center justify-center text-[#1F4E43]">
-                <ShieldCheck className="w-4 h-4" />
+          {currentRole === "ADMIN" && (
+            <Link
+              href="/admin"
+              className="flex items-center justify-between p-5 bg-white rounded-xl border border-[#1F4E43]/30 hover:border-[#1F4E43] transition-all group shadow-2xs"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-[#1F4E43]/10 flex items-center justify-center text-[#1F4E43]">
+                  <ShieldCheck className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-[#1F4E43]">
+                    Admin Control Panel
+                  </h3>
+                  <p className="text-xs text-[#6B7280]">Live inventory &amp; order lifecycle simulator</p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-sm font-semibold text-[#1F4E43]">
-                  Admin Control Panel
-                </h3>
-                <p className="text-xs text-[#6B7280]">Live inventory &amp; order lifecycle simulator</p>
-              </div>
-            </div>
-            <ArrowRight className="w-4 h-4 text-[#1F4E43] group-hover:translate-x-1 transition-all" />
-          </Link>
+              <ArrowRight className="w-4 h-4 text-[#1F4E43] group-hover:translate-x-1 transition-all" />
+            </Link>
+          )}
         </div>
       </div>
     </div>
