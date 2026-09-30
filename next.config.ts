@@ -25,11 +25,11 @@ const securityHeaders = [
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://accounts.google.com",
+      "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://accounts.google.com https://*.firebaseio.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com data:",
-      "img-src 'self' data: blob: https://images.unsplash.com https://lh3.googleusercontent.com",
-      "connect-src 'self' https://accounts.google.com",
+      "img-src 'self' data: blob: https://images.unsplash.com https://lh3.googleusercontent.com https://*.firebasestorage.app https://firebasestorage.googleapis.com",
+      "connect-src 'self' https://accounts.google.com https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://*.firebasestorage.app https://identitytoolkit.googleapis.com",
       "frame-src 'self' https://accounts.google.com",
       "object-src 'none'",
       "base-uri 'self'",
@@ -49,6 +49,14 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "lh3.googleusercontent.com",
+      },
+      {
+        protocol: "https",
+        hostname: "firebasestorage.googleapis.com",
+      },
+      {
+        protocol: "https",
+        hostname: "*.firebasestorage.app",
       },
     ],
   },

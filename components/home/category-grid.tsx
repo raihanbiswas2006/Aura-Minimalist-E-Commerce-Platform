@@ -1,11 +1,14 @@
+"use client";
+
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { CATEGORIES } from "@/data/categories";
+import { useRealtimeCategories } from "@/lib/hooks/use-realtime-catalog";
 
 export function CategoryGrid() {
-  const displayCategories = CATEGORIES.filter((c) => c.slug !== "sale").slice(0, 4);
+  const categories = useRealtimeCategories();
+  const displayCategories = categories.filter((c) => c.slug !== "sale").slice(0, 4);
 
   return (
     <section className="py-16 md:py-20 bg-white border-y border-[#E4E7EB]">

@@ -7,7 +7,7 @@ import { ProductCard } from "@/components/product/product-card";
 import { CatalogFilterSidebar, FilterState } from "./catalog-filter-sidebar";
 import { Sheet } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { getProducts } from "@/lib/api/products";
+import { getProducts, useRealtimeProducts, getCategories } from "@/lib/hooks/use-realtime-catalog";
 import { CATEGORIES } from "@/data/categories";
 import { formatPrice } from "@/lib/utils";
 
@@ -99,19 +99,19 @@ export function CatalogView({
     });
   };
 
-  // Fetch filtered products
-  const products = useMemo(() => {
-    return getProducts({
-      category: filters.category,
-      minPrice: filters.minPrice,
-      maxPrice: filters.maxPrice,
-      color: filters.colors,
-      rating: filters.rating,
-      inStockOnly: filters.inStockOnly,
-      sort: filters.sort as any,
-      query: searchQuery,
-    });
-  }, [filters, searchQuery]);
+  // Live Firestore reactive products
+  const filterParams = useMemo(() => ({
+    category: filters.category,
+    minPrice: filters.minPrice,
+    maxPrice: filters.maxPrice,
+    color: filters.colors,
+    rating: filters.rating,
+    inStockOnly: filters.inStockOnly,
+    sort: filters.sort as any,
+    query: searchQuery,
+  }), [filters, searchQuery]);
+
+  const products = useRealtimeProducts(filterParams);
 
   // Derived Title & Category metadata
   const currentCategoryObj = CATEGORIES.find(

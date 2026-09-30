@@ -1,3 +1,5 @@
+import { db } from "@/lib/firebase";
+import { doc, setDoc } from "firebase/firestore";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { createOrderInputSchema } from "@/lib/security/validation";
@@ -148,6 +150,69 @@ export async function POST(req: NextRequest) {
         total: Number(finalTotal.toFixed(2)),
       },
     });
+
+    // 11. Write directly to Cloud Firestore /orders collection
+    try {
+      const firestoreOrderDoc = {
+        id: order.id,
+        orderNumber: order.orderNumber,
+        userId: session.user.id,
+        customerName: shippingAddress.fullName,
+        customerEmail: session.user.email || shippingAddress.email,
+        customerPhone: shippingAddress.phone,
+        shippingAddress: {
+          fullName: shippingAddress.fullName,
+          streetAddress: shippingAddress.streetAddress,
+          addressLine1: shippingAddress.streetAddress,
+          apartment: shippingAddress.apartment || "",
+          addressLine2: shippingAddress.apartment || "",
+          city: shippingAddress.district || "Dhaka",
+          division: shippingAddress.division || "Dhaka",
+          district: shippingAddress.district || "Dhaka",
+          thana: shippingAddress.area || "",
+          postalCode: shippingAddress.postalCode,
+          country: "Bangladesh",
+          phone: shippingAddress.phone,
+        },
+        items: verifiedItems.map((item) => ({
+          productId: item.productId,
+          productTitle: item.title,
+          title: item.title,
+          name: item.title,
+          unitPrice: item.unitPrice,
+          price: item.unitPrice,
+          quantity: item.quantity,
+          imageUrl: item.imageUrl,
+          variantId: item.variantId,
+          variantAttributes: item.variantName,
+        })),
+        subtotal: order.pricing.subtotal,
+        discount: order.pricing.discount,
+        discountAmount: order.pricing.discount,
+        shippingFee: order.pricing.shipping,
+        total: order.pricing.total,
+        totalAmount: order.pricing.total,
+        status: "pending",
+        fulfillmentStatus: "pending",
+        paymentMethod: paymentMethod,
+        paymentStatus: paymentMethod === "cod" ? "Pending" : "Paid",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        statusHistory: [
+          {
+            status: "pending",
+            timestamp: new Date().toISOString(),
+            staffIdentifier: "Website Storefront",
+            note: "Order placed online via Aura Minimalist Web Storefront.",
+          },
+        ],
+      };
+
+      await setDoc(doc(db, "orders", order.id), firestoreOrderDoc);
+      console.log(`[Firestore] Order ${order.id} written to /orders collection successfully.`);
+    } catch (firestoreErr) {
+      console.error("[Firestore Order Write Error]:", firestoreErr);
+    }
 
     return NextResponse.json({ order }, { status: 201 });
   } catch (error) {
