@@ -238,6 +238,22 @@ function LoginForm() {
         <div className="grid grid-cols-1 gap-1.5">
           <button
             type="button"
+            onClick={() => {
+              setEmail("admin@auraliving.com");
+              setPassword("password123");
+              setError(null);
+            }}
+            className="flex items-center justify-between p-2 rounded-lg bg-white border border-[#E4E7EB] hover:border-[#1F4E43] text-left transition-colors cursor-pointer"
+          >
+            <div>
+              <p className="font-semibold text-[#14171A]">Super Admin</p>
+              <p className="text-[10px] text-[#6B7280]">admin@auraliving.com • password123</p>
+            </div>
+            <span className="text-[11px] text-[#1F4E43] font-medium">Quick Fill</span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => handleSelectDemoPersona("arif@demo.aura")}
             className="flex items-center justify-between p-2 rounded-lg bg-white border border-[#E4E7EB] hover:border-[#1F4E43] text-left transition-colors cursor-pointer"
           >
