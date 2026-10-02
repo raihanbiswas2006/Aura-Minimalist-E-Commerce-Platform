@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, Suspense } from "react";
 import Link from "next/link";
@@ -241,7 +241,7 @@ function LoginForm() {
             onClick={() => {
               setEmail("admin@auraliving.com");
               setPassword("password123");
-              setError(null);
+              setErrorMessage(null);
             }}
             className="flex items-center justify-between p-2 rounded-lg bg-white border border-[#E4E7EB] hover:border-[#1F4E43] text-left transition-colors cursor-pointer"
           >
