@@ -42,3 +42,10 @@ yarn-error.log*
 next-env.d.ts
 
 #test comment
+# AI Agent & Skills
+.agents/
+skills-lock.json
+
+# Service Accounts & Secrets
+service-account*.json
+credentials.json

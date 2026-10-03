@@ -67,3 +67,25 @@ export const createOrderInputSchema = z.object({
   paymentMethod: z.enum(["cod", "bkash", "nagad", "rocket", "card"]),
   couponCode: z.string().trim().optional(),
 });
+
+// Defense-in-depth sanitization functions for text & search inputs
+export function sanitizeText(input?: string | null, maxLength = 255): string {
+  if (!input) return "";
+  let clean = input.trim();
+  // Strip control chars
+  clean = clean.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
+  // Strip script and html tags
+  clean = clean.replace(/<[^>]*>/g, "").replace(/(<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>|javascript:|onload=|onerror=|onclick=)/gi, "");
+  // Strip SQL & NoSQL injection patterns
+  clean = clean.replace(/(--|\b(UNION\s+ALL|UNION\s+SELECT|DROP\s+TABLE|ALTER\s+TABLE|INSERT\s+INTO|DELETE\s+FROM)\b)/gi, "");
+  clean = clean.replace(/(\$gt|\$ne|\$where|\$regex|\$in)/gi, "");
+  return clean.length > maxLength ? clean.slice(0, maxLength) : clean;
+}
+
+export function sanitizeSearchQuery(input?: string | null, maxLength = 100): string {
+  if (!input) return "";
+  let clean = input.trim();
+  clean = clean.replace(/<[^>]*>/g, "");
+  clean = clean.replace(/[\x00-\x1F\x7F\$\{\}\[\]\<\>\\]/g, "");
+  return clean.length > maxLength ? clean.slice(0, maxLength) : clean;
+}

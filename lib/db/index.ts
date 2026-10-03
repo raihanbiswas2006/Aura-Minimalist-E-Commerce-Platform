@@ -5,7 +5,7 @@ import { generateOrderId } from "@/lib/utils";
 import { OrderStatus } from "@/types";
 
 // Seeded bcrypt hash for password "AuraLiving2026!"
-const DEFAULT_DEMO_PASSWORD_HASH = "$2b$10$xfoyTQbok616ZEr1Gs0mpO/KGqSxVjz1V.3j1x1L2vU21Gi9lmMwi";
+const DEFAULT_DEMO_PASSWORD_HASH = "$2b$10$d.u6DE5xtGH/b4ViUOf.FeEAftcN74PyiGLpsl2O4C17hnGXyfUFa";
 
 const INITIAL_DB: DatabaseState = {
   users: [
@@ -58,17 +58,6 @@ const INITIAL_DB: DatabaseState = {
           country: "Bangladesh",
         },
       ],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-    {
-      id: "usr_admin_super",
-      name: "Super Admin",
-      email: "admin@auraliving.com",
-      passwordHash: "$2b$10$jnAXwXIQjCNSTjuv/RKs8OV2J6R4aQ/E/wc9eUSHK3Z.pgiUgYRsu",
-      role: "ADMIN",
-      image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
-      savedAddresses: [],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     },

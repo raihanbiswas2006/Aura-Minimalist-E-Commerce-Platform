@@ -282,7 +282,7 @@ export default function OrderConfirmationPage({ params }: OrderConfirmationProps
         <div className="flex items-center gap-3">
           <Link href="/account/orders">
             <Button variant="outline" size="md">
-              <span>View In Orders</span>
+              <span>View Order in Profile</span>
             </Button>
           </Link>
           <Link href="/c/furniture">
